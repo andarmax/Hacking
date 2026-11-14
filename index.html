@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HACKER__SYSTEM ONLINE</title>
+<title>HACKER // SYSTEM ONLINE</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Courier New',monospace}
   body{background:#000;color:#00ff41;overflow:hidden;height:100vh}
   canvas{position:fixed;top:0;left:0;z-index:0}
   .scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,.25) 3px, rgba(0,0,0,.25) 4px)}
   
-  /* ===== LOGIN SCREEN ===== */
+  /* ===== LOGIN ===== */
   #loginScreen{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(3px)}
   .login-box{width:min(420px,92vw);border:1px solid #00ff41;background:#010a01;padding:28px;border-radius:10px;box-shadow:0 0 40px rgba(0,255,65,.4);text-align:center}
   .login-box h2{font-size:28px;text-shadow:0 0 15px #00ff41;margin-bottom:5px}
@@ -23,28 +23,38 @@
   .hint{margin-top:12px;font-size:11px;color:#00c9ff}
   .login-err{color:#ff3b3b;font-size:12px;min-height:18px;margin-bottom:8px}
 
-  /* ===== MAIN ===== */
-  .container{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;padding:20px;text-align:center}
-  .badge{border:1px solid #00ff41;padding:6px 14px;font-size:12px;letter-spacing:3px;background:rgba(0,255,65,.1);animation:blink 1.2s infinite}
+  /* ===== MAIN - PERBAIKAN DISINI ===== */
+  .container{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100vh;padding:15px 20px 20px;text-align:center;overflow-y:auto}
+  .badge{border:1px solid #00ff41;padding:6px 14px;font-size:12px;letter-spacing:3px;background:rgba(0,255,65,.1);animation:blink 1.2s infinite;margin-top:35px}
   @keyframes blink{50%{opacity:.3}}
-  h1{font-size:clamp(32px,8vw,72px);margin:20px 0 5px;text-shadow:0 0 20px #00ff41;animation:glitch 2.5s infinite}
+
+  /* FOTO PROFIL BARU */
+  .profile-wrap{margin-top:16px;position:relative}
+  .profile-img{width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid #00ff41;box-shadow:0 0 25px #00ff41, 0 0 50px rgba(0,255,65,.5)}
+  .profile-status{position:absolute;bottom:5px;right:5px;width:20px;height:20px;background:#00ff41;border:3px solid #000;border-radius:50%}
+  .profile-name{margin-top:8px;font-size:13px;letter-spacing:2px;color:#fff}
+  .profile-name span{color:#00ff41}
+
+  h1{font-size:clamp(28px,7vw,60px);margin:12px 0 5px;text-shadow:0 0 20px #00ff41;animation:glitch 2.5s infinite}
   @keyframes glitch{0%,92%,100%{transform:translate(0);text-shadow:0 0 20px #00ff41}93%{transform:translate(-3px,2px);text-shadow:-3px 0 red, 3px 0 cyan}95%{transform:translate(3px,-2px);text-shadow:3px 0 red, -3px 0 cyan}97%{transform:translate(0)}}
   .subtitle{color:#00c9ff;font-size:clamp(14px,3vw,20px);letter-spacing:2px}
-  .terminal{margin-top:22px;width:min(680px,95vw);background:rgba(0,20,0,.88);border:1px solid #00ff41;border-radius:8px;text-align:left;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.4)}
+  .terminal{margin-top:18px;width:min(680px,95vw);background:rgba(0,20,0,.88);border:1px solid #00ff41;border-radius:8px;text-align:left;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.4)}
   .term-head{background:#003300;padding:10px 14px;font-size:13px;display:flex;gap:8px;align-items:center}
   .dot{width:12px;height:12px;border-radius:50%;display:inline-block}.r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
-  .term-body{padding:16px;min-height:170px;max-height:240px;overflow-y:auto;font-size:14px;line-height:1.7}
+  .term-body{padding:16px;min-height:140px;max-height:190px;overflow-y:auto;font-size:14px;line-height:1.7}
   .cursor{display:inline-block;width:9px;height:17px;background:#00ff41;vertical-align:-3px;animation:blink .8s infinite}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
-  .card{border:1px solid #00ff41;background:rgba(0,255,65,.07);padding:12px 18px;border-radius:6px;min-width:115px}
-  .card b{font-size:22px;display:block}.card span{font-size:11px;letter-spacing:1px;opacity:.8}
-  .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
-  .btn{background:#00ff41;color:#000;border:none;padding:13px 22px;font-weight:900;letter-spacing:1px;border-radius:4px;cursor:pointer;box-shadow:0 0 20px #00ff41}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .card{border:1px solid #00ff41;background:rgba(0,255,65,.07);padding:10px 14px;border-radius:6px;min-width:105px}
+  .card b{font-size:20px;display:block}.card span{font-size:11px;letter-spacing:1px;opacity:.8}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px;padding-bottom:30px}
+  .btn{background:#00ff41;color:#000;border:none;padding:12px 18px;font-weight:900;letter-spacing:1px;border-radius:4px;cursor:pointer;box-shadow:0 0 20px #00ff41;font-size:13px}
   .btn:hover{transform:scale(1.05);background:#fff}
   .btn2{background:transparent;color:#00c9ff;border:1px solid #00c9ff;box-shadow:0 0 15px rgba(0,201,255,.4)}
   .btn2:hover{background:#00c9ff;color:#000}
+  .btn-danger{background:#ff3b3b;color:#fff;box-shadow:0 0 20px #ff3b3b;border:1px solid #ff3b3b}
+  .btn-danger:hover{background:#fff;color:#ff3b3b}
 
-  /* ===== CRACKER MODAL ===== */
+  /* CRACKER */
   #crackerModal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85)}
   .cracker{width:min(480px,92vw);border:2px solid #ffbd2e;background:#0a0800;padding:24px;border-radius:10px;text-align:center;box-shadow:0 0 40px rgba(255,189,46,.4)}
   .cracker h3{color:#ffbd2e;letter-spacing:2px;margin-bottom:10px}
@@ -52,8 +62,18 @@
   .bar{height:10px;background:#222;border-radius:10px;overflow:hidden;margin:12px 0}
   .bar-fill{height:100%;width:0%;background:#ffbd2e;transition:width .1s}
   .cracker-log{font-size:12px;text-align:left;min-height:40px;color:#00ff41}
-  .footer{position:fixed;bottom:12px;left:0;right:0;z-index:3;text-align:center;font-size:11px;opacity:.6;letter-spacing:2px}
-  .sound-toggle{position:fixed;top:12px;right:12px;z-index:30;background:#000;border:1px solid #00ff41;color:#00ff41;padding:8px 12px;border-radius:20px;cursor:pointer;font-size:12px}
+  .footer{position:fixed;bottom:8px;left:0;right:0;z-index:3;text-align:center;font-size:11px;opacity:.6;letter-spacing:2px}
+  .sound-toggle{position:fixed;top:12px;right:12px;z-index:50;background:#000;border:1px solid #00ff41;color:#00ff41;padding:6px 10px;border-radius:20px;cursor:pointer;font-size:11px}
+
+  /* FAKE VIRUS / FORMAT - BARU */
+  #virusModal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:#000}
+  .virus-box{width:min(500px,92vw);text-align:center}
+  .virus-box h2{color:#ff3b3b;font-size:28px;letter-spacing:2px;margin-bottom:10px}
+  .virus-box p{font-size:13px;line-height:1.6;margin-bottom:14px}
+  .virus-bar{height:18px;background:#222;border:1px solid #ff3b3b;border-radius:5px;overflow:hidden}
+  .virus-fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,#ff3b3b,#ff3b3b 10px,#8b0000 10px,#8b0000 20px);transition:width .1s}
+  .virus-pct{font-size:22px;font-weight:900;color:#ff3b3b;margin:10px 0}
+  .virus-log{font-size:12px;color:#00ff41;text-align:left;background:#010a01;border:1px solid #333;padding:10px;min-height:60px;margin-top:10px}
   @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 </style>
 </head>
@@ -68,19 +88,28 @@
   <div class="login-box">
     <div style="font-size:40px">🔐</div>
     <h2>SECURE LOGIN</h2>
-    <p>RESTRICTED AREA__AUTHORIZED ONLY</p>
+    <p>RESTRICTED AREA // AUTHORIZED ONLY</p>
     <div class="login-err" id="loginErr"></div>
     <input id="userInput" placeholder="USERNAME" autocomplete="off" value="bro">
     <input id="passInput" type="password" placeholder="PASSWORD" autocomplete="off" value="hacker123">
     <button class="login-btn" onclick="doLogin()">▶ ACCESS SYSTEM</button>
-    <div class="hint">Hint buat demo: user <b>bro</b> / pass <b>hacker123</b><br>Klik tombol, suara ketikan akan aktif</div>
-    <div style="margin-top:14px;font-size:11px;opacity:.5">IP: 192.168.1.101 - LOCATION: YOGYAKARTA - ENCRYPTED</div>
+    <div class="hint">Hint: user <b>bro</b> / pass <b>hacker123</b></div>
+    <div style="margin-top:14px;font-size:11px;opacity:.5">IP: 192.168.1.101 - YOGYAKARTA - ENCRYPTED</div>
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="container" id="mainContent" style="display:none">
   <div class="badge">● SYSTEM ONLINE - ACCESS GRANTED</div>
+
+  <!-- FOTO PROFIL -->
+  <div class="profile-wrap">
+    <!-- GANTI LINK INI PAKE FOTO LU, upload dulu ke repo, contoh: foto.jpg -->
+    <img src="https://i.pravatar.cc/300?img=12" alt="Hacker" class="profile-img" id="profileImg" onerror="this.src='https://via.placeholder.com/150/000000/00ff41?text=BRO'">
+    <div class="profile-status"></div>
+  </div>
+  <div class="profile-name">@<span id="profileHandle">andarmax</span> • ELITE HACKER • LEVEL 99</div>
+
   <h1>HACKER MODE</h1>
   <div class="subtitle">&lt; WELCOME BACK, <span id="welcomeName">BRO</span> /&gt;</div>
 
@@ -99,8 +128,10 @@
   <div class="btns">
     <button class="btn" onclick="startHack()">▶ START HACKING</button>
     <button class="btn btn2" onclick="openCracker()">🔓 CRACK PASSWORD</button>
+    <button class="btn btn-danger" onclick="openVirus()">☠ FAKE VIRUS / FORMAT</button>
     <button class="btn btn2" onclick="logout()">↩ LOGOUT</button>
   </div>
+  <div style="font-size:11px;opacity:.6;padding-bottom:20px">Target hari ini: <span id="targetList" style="color:#00c9ff">rizky_, budi, siti, andi, putri...</span></div>
 </div>
 
 <!-- CRACKER -->
@@ -110,17 +141,30 @@
     <div style="font-size:12px;opacity:.8">TARGET: admin@target-server.com</div>
     <div class="cracker-pass" id="crackPass">______</div>
     <div class="bar"><div class="bar-fill" id="crackBar"></div></div>
-    <div id="crackPct" style="font-size:12px">0% - BRUTE FORCE ATTACK...</div>
+    <div id="crackPct" style="font-size:12px">0% - BRUTE FORCE...</div>
     <div class="cracker-log" id="crackLog">> starting dictionary attack...</div>
     <button class="btn" id="crackBtn" onclick="startCrack()" style="background:#ffbd2e;box-shadow:0 0 20px #ffbd2e">▶ START CRACKING</button>
     <button class="btn btn2" onclick="closeCracker()" style="margin-left:8px">CLOSE</button>
   </div>
 </div>
 
+<!-- FAKE VIRUS -->
+<div id="virusModal">
+  <div class="virus-box">
+    <div style="font-size:60px">☠</div>
+    <h2 id="virusTitle">WARNING! VIRUS DETECTED!</h2>
+    <p id="virusSub">System lu terinfeksi! Semua foto & data akan dihapus dalam <b id="virusCount">10</b> detik<br>Jangan matikan HP!</p>
+    <div class="virus-bar"><div class="virus-fill" id="virusFill"></div></div>
+    <div class="virus-pct" id="virusPct">FORMATTING... 0%</div>
+    <div class="virus-log" id="virusLog">> deleting /photos/DCIM...<br>> deleting /whatsapp/media...</div>
+    <button class="btn btn-danger" id="virusBtn" onclick="startVirus()" style="margin-top:12px">▶ START FORMAT (PRANK)</button>
+    <button class="btn btn2" onclick="closeVirus()" style="margin-top:12px">BATAL / CLOSE</button>
+  </div>
+</div>
+
 <div class="footer">MADE BY BRO • GITHUB PAGES • 2026 • NO SYSTEM WAS HARMED - FOR EDUCATION ONLY</div>
 
 <script>
-  // === MATRIX ===
   const c=document.getElementById('matrix'); const ctx=c.getContext('2d');
   c.width=innerWidth; c.height=innerHeight;
   const chars='01ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@!<>\\/|=+*';
@@ -128,7 +172,6 @@
   function draw(){ctx.fillStyle='rgba(0,0,0,0.08)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#00ff41';ctx.font=font+'px monospace';drops.forEach((y,i)=>{const t=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(t,i*font,y*font);if(y*font>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++;});}
   setInterval(draw,33);
 
-  // === SUARA KETIKAN (Web Audio, tanpa file) ===
   let soundOn=true; let audioCtx=null;
   function playKey(){
     if(!soundOn) return;
@@ -153,13 +196,8 @@
       o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
     }catch(e){}
   }
-  function toggleSound(){
-    soundOn=!soundOn;
-    document.getElementById('soundBtn').innerText = soundOn ? '🔊 SOUND: ON' : '🔇 SOUND: OFF';
-    if(soundOn) playBeep(1000,0.1);
-  }
+  function toggleSound(){ soundOn=!soundOn; document.getElementById('soundBtn').innerText = soundOn ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'; if(soundOn) playBeep(1000,0.1); }
 
-  // === LOGIN ===
   function doLogin(){
     const u=document.getElementById('userInput').value.trim();
     const p=document.getElementById('passInput').value.trim();
@@ -177,20 +215,14 @@
       playBeep(200,0.25);
     }
   }
-  function logout(){
-    document.getElementById('mainContent').style.display='none';
-    document.getElementById('loginScreen').style.display='flex';
-  }
+  function logout(){ document.getElementById('mainContent').style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
   document.getElementById('passInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); playKey(); });
   document.getElementById('userInput').addEventListener('keydown', ()=>playKey());
 
-  // === TERMINAL ===
-  const lines=["> initializing system...","> bypassing firewall... [OK]","> injecting payload... [OK]","> access granted. Welcome, BRO.","> ketik START HACKING atau CRACK PASSWORD."];
+  const lines=["> initializing system...","> bypassing firewall... [OK]","> injecting payload... [OK]","> access granted. Welcome, BRO.","> pilih START HACKING untuk hack temen lu."];
   let li=0, ci=0; let termStarted=false;
   const term=document.getElementById('term');
-  function startTerminal(){
-    if(termStarted) return; termStarted=true; li=0; ci=0; term.innerHTML=''; type();
-  }
+  function startTerminal(){ if(termStarted) return; termStarted=true; li=0; ci=0; term.innerHTML=''; type(); }
   function type(){
     if(li>=lines.length){ term.innerHTML += '<span class="cursor"></span>'; return; }
     if(ci<=lines[li].length){
@@ -206,17 +238,23 @@
     }
   },800);
 
+  // === TARGET HACK PAKE NAMA TEMEN - GANTI DISINI ===
+  const friends = ["rizky_", "budi_pratama", "siti.aja", "andi_ganteng", "putri_cantik", "dimas.exe", "fajar_123", "nabila", "galang", "citra", "yoga", "aulia"];
+  const friendIPs = ["192.168.1.", "10.0.0.", "172.16.0."];
   let hacked=0;
   function startHack(){
     hacked++; document.getElementById('hack').innerText=hacked;
+    const target = friends[Math.floor(Math.random()*friends.length)];
+    const ip = friendIPs[Math.floor(Math.random()*friendIPs.length)] + Math.floor(Math.random()*200+2);
+    const passwords = ["password123", "12345678", "sayangku", "qwerty", "bocil123"];
+    const pw = passwords[Math.floor(Math.random()*passwords.length)];
     const extra=document.createElement('div');
-    extra.innerText=`> HACK SUCCESS #${hacked} - Target: 192.168.1.${Math.floor(Math.random()*200+2)} [BREACHED]`;
+    extra.innerHTML=`> HACK SUCCESS #${hacked} - Target: @${target} [${ip}]<br>> Password ketemu: ${pw} [BREACHED] 🔓`;
     term.appendChild(extra); term.scrollTop=term.scrollHeight;
     document.body.style.animation='shake .3s'; setTimeout(()=>document.body.style.animation='',300);
     playBeep(1200,0.12);
   }
 
-  // === PASSWORD CRACKER ===
   const targetPass='BRO2026';
   let cracking=false; let crackedTotal=0;
   function openCracker(){ document.getElementById('crackerModal').style.display='flex'; playBeep(700,0.1); }
@@ -233,8 +271,7 @@
       progress+=Math.random()*4+2;
       if(progress>100) progress=100;
       bar.style.width=progress+'%';
-      pct.innerText=Math.floor(progress)+'% - BRUTE FORCE ATTACK... '+Math.floor(progress*1234)+' combinations tried';
-      // angka random + huruf yang udah kebuka
+      pct.innerText=Math.floor(progress)+'% - BRUTE FORCE... '+Math.floor(progress*1234)+' combinations';
       let display='';
       for(let i=0;i<targetPass.length;i++){
         if(i<revealed) display+=targetPass[i];
@@ -242,22 +279,50 @@
       }
       passEl.innerText=display;
       if(Math.random()>0.85) playKey();
-      // buka 1 huruf tiap ~12% progress
       if(progress > (revealed+1)*12 && revealed<targetPass.length){
         revealed++; playBeep(900+revealed*100,0.08);
         log.innerHTML += `<br>> char ${revealed} found: ${targetPass[revealed-1]}`;
       }
       if(progress>=100){
         clearInterval(interval);
-        passEl.innerText=targetPass; passEl.style.color='#00ff41'; passEl.style.borderColor='#00ff41';
+        passEl.innerText=targetPass; passEl.style.color='#00ff41';
         pct.innerText='100% - PASSWORD CRACKED! ✅';
         log.innerHTML += `<br>> ✅ SUCCESS! Password: ${targetPass}`;
         btn.innerText='▶ CRACK AGAIN'; btn.disabled=false; cracking=false;
         crackedTotal++; document.getElementById('crackedCount').innerText=crackedTotal;
         playBeep(880,0.15); setTimeout(()=>playBeep(1320,0.25),150);
-        setTimeout(()=>{ passEl.style.color='#fff'; passEl.style.borderColor='#ffbd2e'; }, 2000);
       }
     }, 90);
+  }
+
+  // === FAKE VIRUS / FORMAT ===
+  let virusRunning=false;
+  function openVirus(){ document.getElementById('virusModal').style.display='flex'; playBeep(200,0.3); }
+  function closeVirus(){ document.getElementById('virusModal').style.display='none'; virusRunning=false; document.getElementById('virusTitle').innerText='WARNING! VIRUS DETECTED!'; document.getElementById('virusTitle').style.color='#ff3b3b'; document.getElementById('virusSub').innerHTML='System lu terinfeksi! Semua foto & data akan dihapus dalam <b>10</b> detik<br>Jangan matikan HP!'; document.getElementById('virusFill').style.width='0%'; document.getElementById('virusPct').innerText='FORMATTING... 0%'; document.getElementById('virusBtn').innerText='▶ START FORMAT (PRANK)'; document.getElementById('virusBtn').disabled=false; }
+  function startVirus(){
+    if(virusRunning) return; virusRunning=true;
+    document.getElementById('virusBtn').innerText='FORMATTING...'; document.getElementById('virusBtn').disabled=true;
+    let p=0;
+    const logs=["> deleting /photos/DCIM...","> deleting /whatsapp/media...","> deleting /contacts...","> deleting /gallery...","> deleting /tiktok/cache...","> wiping system..."];
+    let li2=0;
+    const iv=setInterval(()=>{
+      p+=Math.random()*5+2; if(p>100) p=100;
+      document.getElementById('virusFill').style.width=p+'%';
+      document.getElementById('virusPct').innerText='FORMATTING... '+Math.floor(p)+'%';
+      document.body.style.animation='shake .2s'; setTimeout(()=>document.body.style.animation='',200);
+      if(Math.random()>0.7) playBeep(150,0.1);
+      if(li2<logs.length && p > (li2+1)*15){ document.getElementById('virusLog').innerHTML+='<br>'+logs[li2]; li2++; }
+      if(p>=100){
+        clearInterval(iv);
+        document.getElementById('virusTitle').innerText='😂 KENA PRANK BRO!';
+        document.getElementById('virusTitle').style.color='#00ff41';
+        document.getElementById('virusSub').innerHTML='TENANG! Gak ada yang kehapus! Ini cuma prank!<br>HP lu aman 100%. Share ke temen lu biar dia panik juga!';
+        document.getElementById('virusPct').innerText='PRANK SUCCESS! ✅';
+        document.getElementById('virusLog').innerHTML+='<br>> ✅ JUST KIDDING! NO DATA DELETED';
+        document.getElementById('virusBtn').innerText='😂 PRANK LAGI'; document.getElementById('virusBtn').disabled=false; virusRunning=false;
+        playBeep(880,0.2); setTimeout(()=>playBeep(1320,0.3),200);
+      }
+    },120);
   }
 </script>
 </body>
