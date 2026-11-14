@@ -1,1 +1,1 @@
-https://github.com/andarmax/Hacking
+https://andarmax.github.io/Hacking/
