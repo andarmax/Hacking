@@ -2,360 +2,321 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HACKER ANDARMAX ONLINE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANDARMAX ACADEMY — Lab</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:'Courier New',monospace;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
-  body{background:#000;color:#00ff41;overflow:hidden}
-  canvas{position:fixed;top:0;left:0;z-index:0}
-  .scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,.25) 3px, rgba(0,0,0,.25) 4px)}
-
-  /* ===== LOGIN ===== */
-  #loginScreen{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(3px);padding:16px;overflow-y:auto}
-  .login-box{width:100%;max-width:420px;border:1px solid #00ff41;background:#010a01;padding:24px;border-radius:12px;box-shadow:0 0 40px rgba(0,255,65,.4);text-align:center}
-  .login-box h2{font-size:26px;text-shadow:0 0 15px #00ff41;margin-bottom:5px}
-  .login-box p{font-size:11px;opacity:.7;letter-spacing:2px;margin-bottom:18px}
-  .login-box input{width:100%;background:#000;border:1px solid #00ff41;color:#00ff41;padding:14px;margin-bottom:12px;border-radius:6px;outline:none;font-size:16px}
-  .login-box input:focus{box-shadow:0 0 15px rgba(0,255,65,.6)}
-  .login-btn{width:100%;background:#00ff41;color:#000;border:none;padding:14px;font-weight:900;letter-spacing:2px;cursor:pointer;border-radius:6px;font-size:15px}
-  .login-btn:hover{background:#fff}
-  .hint{margin-top:12px;font-size:11px;color:#00c9ff}
-  .login-err{color:#ff3b3b;font-size:12px;min-height:18px;margin-bottom:8px}
-
-  /* ===== MAIN - RESPONSIVE ===== */
-  .container{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;height:100dvh;padding:12px 16px 60px;text-align:center;overflow-y:auto;scrollbar-width:none}
-  .container::-webkit-scrollbar{display:none}
-  .badge{border:1px solid #00ff41;padding:6px 14px;font-size:11px;letter-spacing:2px;background:rgba(0,255,65,.1);animation:blink 1.2s infinite;margin-top:38px;white-space:nowrap}
-  @keyframes blink{50%{opacity:.3}}
-
-  /* FOTO PROFIL - FOTO LU */
-  .profile-wrap{margin-top:14px;position:relative;cursor:pointer}
-  .profile-img{width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid #00ff41;box-shadow:0 0 25px #00ff41, 0 0 50px rgba(0,255,65,.5);background:#111;transition:.3s}
-  .profile-wrap:active .profile-img{transform:scale(.95)}
-  .profile-img.hacker-mode{border-color:#ff3b3b;box-shadow:0 0 25px #ff3b3b;filter:hue-rotate(140deg) contrast(1.2)}
-  .profile-status{position:absolute;bottom:5px;right:5px;width:20px;height:20px;background:#00ff41;border:3px solid #000;border-radius:50%}
-  .profile-name{margin-top:8px;font-size:12px;letter-spacing:1px;color:#fff;line-height:1.4}
-  .profile-name span{color:#00ff41}
-  .tap-hint{font-size:10px;opacity:.5;margin-top:2px}
-
-  h1{font-size:clamp(28px,7vw,60px);margin:10px 0 4px;text-shadow:0 0 20px #00ff41;animation:glitch 2.5s infinite;line-height:1}
-  @keyframes glitch{0%,92%,100%{transform:translate(0)}93%{transform:translate(-3px,2px);text-shadow:-3px 0 red, 3px 0 cyan}95%{transform:translate(3px,-2px);text-shadow:3px 0 red, -3px 0 cyan}97%{transform:translate(0)}}
-  .subtitle{color:#00c9ff;font-size:clamp(13px,3vw,19px);letter-spacing:1px}
-  .terminal{margin-top:16px;width:100%;max-width:680px;background:rgba(0,20,0,.9);border:1px solid #00ff41;border-radius:8px;text-align:left;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.4);flex-shrink:0}
-  .term-head{background:#003300;padding:10px 14px;font-size:12px;display:flex;gap:8px;align-items:center}
-  .dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex-shrink:0}.r{background:#ff5f56}.y{background:#ffbd2e}.g{background:#27c93f}
-  .term-body{padding:14px;min-height:130px;max-height:190px;overflow-y:auto;font-size:13px;line-height:1.6;word-break:break-word}
-  .cursor{display:inline-block;width:9px;height:16px;background:#00ff41;vertical-align:-3px;animation:blink .8s infinite}
-  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:680px;margin-top:14px}
-  .card{border:1px solid #00ff41;background:rgba(0,255,65,.07);padding:10px 8px;border-radius:6px}
-  .card b{font-size:20px;display:block}.card span{font-size:10px;letter-spacing:1px;opacity:.8}
-  .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:680px;margin-top:16px;padding-bottom:10px}
-  .btn{background:#00ff41;color:#000;border:none;padding:14px 10px;font-weight:900;letter-spacing:.5px;border-radius:6px;cursor:pointer;box-shadow:0 0 18px rgba(0,255,65,.6);font-size:13px}
-  .btn:active{transform:scale(.97)}
-  .btn2{background:transparent;color:#00c9ff;border:1px solid #00c9ff;box-shadow:0 0 12px rgba(0,201,255,.3)}
-  .btn2:active{background:#00c9ff;color:#000}
-  .btn-danger{background:#ff3b3b;color:#fff;box-shadow:0 0 18px rgba(255,59,59,.6);border:1px solid #ff3b3b;grid-column:span 2}
-  .btn-full{grid-column:span 2}
-
-  /* CRACKER */
-  #crackerModal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);padding:16px}
-  .cracker{width:100%;max-width:480px;border:2px solid #ffbd2e;background:#0a0800;padding:20px;border-radius:12px;text-align:center;box-shadow:0 0 40px rgba(255,189,46,.4);max-height:90dvh;overflow-y:auto}
-  .cracker h3{color:#ffbd2e;letter-spacing:1px;margin-bottom:10px;font-size:16px}
-  .cracker-pass{font-size:26px;letter-spacing:4px;font-weight:900;color:#fff;background:#000;padding:12px;border:1px dashed #ffbd2e;margin:12px 0;word-break:break-all}
-  .bar{height:10px;background:#222;border-radius:10px;overflow:hidden;margin:12px 0}
-  .bar-fill{height:100%;width:0%;background:#ffbd2e;transition:width .1s}
-  .cracker-log{font-size:12px;text-align:left;min-height:40px;color:#00ff41}
-  .footer{position:fixed;bottom:8px;left:0;right:0;z-index:3;text-align:center;font-size:10px;opacity:.55;letter-spacing:1px;padding:0 10px;pointer-events:none}
-  .sound-toggle{position:fixed;top:12px;right:12px;z-index:50;background:#000;border:1px solid #00ff41;color:#00ff41;padding:7px 11px;border-radius:20px;cursor:pointer;font-size:11px}
-
-  /* FAKE VIRUS */
-  #virusModal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:#000;padding:16px}
-  .virus-box{width:100%;max-width:500px;text-align:center}
-  .virus-box h2{color:#ff3b3b;font-size:24px;letter-spacing:1px;margin-bottom:10px}
-  .virus-box p{font-size:13px;line-height:1.6;margin-bottom:14px}
-  .virus-bar{height:18px;background:#222;border:1px solid #ff3b3b;border-radius:5px;overflow:hidden}
-  .virus-fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,#ff3b3b,#ff3b3b 10px,#8b0000 10px,#8b0000 20px);transition:width .1s}
-  .virus-pct{font-size:20px;font-weight:900;color:#ff3b3b;margin:10px 0}
-  .virus-log{font-size:12px;color:#00ff41;text-align:left;background:#010a01;border:1px solid #333;padding:10px;min-height:60px;margin-top:10px;word-break:break-word}
-  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-
-  /* ===== PC / TABLET - LAYAR GEDE ===== */
-  @media (min-width: 768px){
-    .container{padding:20px 20px 70px}
-    .badge{margin-top:20px;font-size:12px}
-    .profile-img{width:130px;height:130px}
-    .profile-name{font-size:13px}
-    .terminal{margin-top:20px}
-    .term-body{font-size:14px;min-height:150px}
-    .stats{grid-template-columns:repeat(4,1fr)}
-    .btns{grid-template-columns:repeat(4,1fr)}
-    .btn-danger{grid-column:span 1}
-    .btn-full{grid-column:span 1}
-    .cracker-pass{font-size:36px;letter-spacing:8px}
-    .virus-box h2{font-size:28px}
-  }
-  @media (min-width: 1024px){
-    .profile-img{width:150px;height:150px}
-    h1{font-size:68px}
-  }
+  :root{ --bg:#0a0c0a; --panel:#111411; --line:#232823; --green:#33ff66; --dim:#8a938a; --yellow:#e8c33c; --red:#ff4d4d; --blue:#6db3ff; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:#d6ddd6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.55}
+  #login{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:#000}
+  .login-box{width:100%;max-width:380px;border:1px solid var(--line);background:var(--panel);padding:28px}
+  .login-box h1{font-size:18px;letter-spacing:.12em;color:#fff;font-weight:700}
+  .login-box h1 span{color:var(--green)}
+  .login-box .meta{font-size:12px;color:var(--dim);margin:8px 0 22px;border-bottom:1px solid var(--line);padding-bottom:14px}
+  label{font-size:11px;letter-spacing:.1em;color:var(--dim);display:block;margin:14px 0 6px}
+  input{width:100%;background:#000;border:1px solid var(--line);color:#fff;padding:11px 12px;outline:none;font-size:14px;font-family:inherit}
+  input:focus{border-color:var(--green)}
+  button{font-family:inherit;cursor:pointer}
+  .btn-primary{width:100%;margin-top:18px;background:var(--green);color:#000;border:0;padding:12px;font-weight:700;letter-spacing:.05em}
+  .btn-primary:hover{background:#fff}
+  .err{color:var(--red);font-size:12px;min-height:16px;margin-top:10px}
+  .hint{margin-top:16px;font-size:12px;color:var(--dim)}
+  .topbar{position:sticky;top:0;z-index:5;background:rgba(10,12,10,.96);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
+  .topbar b{color:#fff;letter-spacing:.1em}
+  .topbar span{color:var(--green)}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  .head{border:1px solid var(--line);background:var(--panel);padding:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .head h2{font-size:22px;color:#fff;line-height:1.2}
+  .head p{color:var(--dim);font-size:12px;margin-top:6px;max-width:480px}
+  .stat{text-align:right}
+  .stat .big{font-size:22px;color:var(--green);font-weight:700}
+  .stat .small{font-size:11px;color:var(--dim);letter-spacing:.08em}
+  .progress{height:6px;background:#1c201c;margin-top:14px}
+  .progress i{display:block;height:100%;background:var(--green);width:0;transition:width .4s}
+  .term{margin-top:16px;border:1px solid var(--line);background:#080a08}
+  .term-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-size:11px;color:var(--dim);letter-spacing:.06em}
+  .term-body{padding:14px;min-height:180px;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+  .term-body .cmd{color:#fff}
+  .term-body .ok{color:var(--green)}
+  .term-body .warn{color:var(--yellow)}
+  .term-body .bad{color:var(--red)}
+  .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:10px 12px;align-items:center}
+  .term-input span{color:var(--green);white-space:nowrap}
+  .term-input input{border:0;background:transparent;padding:0}
+  .section-title{margin:22px 0 10px;font-size:11px;letter-spacing:.14em;color:var(--dim)}
+  .mission{border:1px solid var(--line);background:var(--panel);padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .mission.done{border-left:3px solid var(--green)}
+  .mission.locked{opacity:.55}
+  .mission h3{font-size:14px;color:#fff}
+  .mission p{font-size:12px;color:var(--dim);margin-top:5px;max-width:520px}
+  .mission .tag{font-size:11px;color:var(--yellow);margin-top:8px}
+  .m-btn{flex-shrink:0;background:transparent;border:1px solid var(--green);color:var(--green);padding:9px 12px;font-size:12px;font-weight:700}
+  .m-btn:disabled{border-color:var(--line);color:var(--dim);cursor:not-allowed}
+  .m-btn:hover:not(:disabled){background:var(--green);color:#000}
+  .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);padding:16px}
+  .modal-box{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);padding:20px;max-height:90vh;overflow-y:auto}
+  .modal-box h3{color:#fff;font-size:16px;margin-bottom:10px}
+  .modal-box p{font-size:13px;color:#c8cec8}
+  .modal-box .code{background:#000;border:1px solid var(--line);padding:12px;margin:12px 0;font-size:12px;overflow-x:auto;white-space:pre}
+  .opt{display:block;width:100%;text-align:left;background:#000;border:1px solid var(--line);color:#d6ddd6;padding:11px;margin-top:8px;font-size:13px}
+  .opt:hover{border-color:var(--green)}
+  .row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:1px solid var(--line);background:#000;color:#d6ddd6;font-weight:700}
+  .btn.primary{background:var(--green);color:#000;border-color:var(--green)}
+  .feedback{margin-top:12px;font-size:12px;min-height:18px}
+  .footer{margin-top:28px;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  /* SERTIFIKAT - BERSIH, BISA CETAK */
+  .cert{width:100%;max-width:680px;background:#fff;color:#111;padding:36px 40px;text-align:left}
+  .cert-top{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:16px}
+  .cert-top b{letter-spacing:.15em;font-size:13px}
+  .cert-top span{font-size:11px;color:#555}
+  .cert h2{font-size:28px;margin:28px 0 6px;line-height:1.1;color:#000}
+  .cert .sub{font-size:13px;color:#444}
+  .cert .name{font-size:32px;font-weight:800;margin:22px 0 4px;border-bottom:1px solid #111;padding-bottom:8px}
+  .cert .desc{font-size:13px;line-height:1.6;color:#333;max-width:560px}
+  .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding:16px 0;font-size:12px}
+  .cert-grid div span{display:block;color:#777;font-size:10px;letter-spacing:.12em;margin-bottom:4px}
+  .cert-sign{display:flex;justify-content:space-between;margin-top:28px;font-size:12px}
+  .cert-sign .line{border-top:1px solid #111;padding-top:6px;min-width:180px}
+  .cert-foot{margin-top:20px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:10px}
+  @media(max-width:560px){ .mission{flex-direction:column} .m-btn{width:100%} .cert{padding:24px} .cert-grid{grid-template-columns:1fr} }
+  @media print{ body{background:#fff} #login,#main,.modal{display:none!important} #printArea{display:block!important} }
+  #printArea{display:none}
 </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="scanlines"></div>
-<button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔊 SOUND: ON</button>
-
-<!-- LOGIN -->
-<div id="loginScreen">
+<div id="login">
   <div class="login-box">
-    <div style="font-size:40px">🔐</div>
-    <h2>SECURE LOGIN</h2>
-    <p>RESTRICTED AREA // AUTHORIZED ONLY</p>
-    <div class="login-err" id="loginErr"></div>
-    <input id="userInput" placeholder="USERNAME" autocomplete="off" value="bro">
-    <input id="passInput" type="password" placeholder="PASSWORD" autocomplete="off" value="hacker123">
-    <button class="login-btn" onclick="doLogin()">▶ ACCESS SYSTEM</button>
-    <div class="hint">Hint: user <b>bro</b> / pass <b>hacker123</b></div>
-    <div style="margin-top:14px;font-size:11px;opacity:.5">IP: 192.168.1.101 - YOGYAKARTA - ENCRYPTED</div>
+    <h1>ANDARMAX <span>ACADEMY</span></h1>
+    <div class="meta">LAB LOKAL — ETHICAL HACKING / WHITE HAT<br>Semua aktivitas berjalan di simulasi. Tidak ada sistem eksternal yang diakses.</div>
+    <label>USERNAME</label>
+    <input id="userInput" value="bro" autocomplete="off">
+    <label>PASSWORD</label>
+    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off">
+    <button class="btn-primary" onclick="doLogin()">MASUK LAB →</button>
+    <div class="err" id="loginErr"></div>
+    <div class="hint">Kredensial lab: <b style="color:#fff">bro</b> / <b style="color:#fff">Andar_TE18</b><br>Ini hanya untuk membuka simulasi, bukan akun nyata.</div>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="container" id="mainContent" style="display:none">
-  <div class="badge">● SYSTEM ONLINE - ACCESS GRANTED</div>
-
-  <!-- FOTO LU - FILE HARUS BERNAMA foto.jpg DI REPO -->
-  <div class="profile-wrap" onclick="toggleHackerPhoto()" title="Klik foto untuk mode hacker">
-    <img src="foto.jpg" alt="ANDARMAX" class="profile-img" id="profileImg" onerror="this.onerror=null;this.src='https://i.pravatar.cc/300?img=12'">
-    <div class="profile-status"></div>
-  </div>
-  <div class="profile-name">@<span id="profileHandle">andarmax</span> • ELITE HACKER • LEVEL 99</div>
-  <div class="tap-hint">👆 klik foto untuk mode hacker</div>
-
-  <h1>HACKER MODE</h1>
-  <div class="subtitle">&lt; WELCOME BACK, <span id="welcomeName">BRO</span> /&gt;</div>
-
-  <div class="terminal">
-    <div class="term-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span style="margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">root@andarmax: ~/system</span></div>
-    <div class="term-body" id="term"></div>
-  </div>
-
-  <div class="stats">
-    <div class="card"><b id="cpu">0%</b><span>CPU USAGE</span></div>
-    <div class="card"><b id="ram">0%</b><span>MEMORY</span></div>
-    <div class="card"><b id="hack">0</b><span>TARGET HACKED</span></div>
-    <div class="card"><b id="crackedCount">0</b><span>PASSWORD CRACKED</span></div>
-  </div>
-
-  <div class="btns">
-    <button class="btn" onclick="startHack()">▶ START HACKING</button>
-    <button class="btn btn2" onclick="openCracker()">🔓 CRACK PASSWORD</button>
-    <button class="btn btn-danger" onclick="openVirus()">☠ FAKE VIRUS</button>
-    <button class="btn btn2" onclick="logout()">↩ LOGOUT</button>
-  </div>
-  <div style="font-size:11px;opacity:.6;padding-bottom:10px">Target: <span style="color:#00c9ff">rizky_, budi, siti, andi, putri...</span> • PC & Mobile Ready ✅</div>
-</div>
-
-<!-- CRACKER -->
-<div id="crackerModal">
-  <div class="cracker">
-    <h3>⚠ PASSWORD CRACKER v2.0</h3>
-    <div style="font-size:12px;opacity:.8">TARGET: admin@target-server.com</div>
-    <div class="cracker-pass" id="crackPass">______</div>
-    <div class="bar"><div class="bar-fill" id="crackBar"></div></div>
-    <div id="crackPct" style="font-size:12px">0% - BRUTE FORCE...</div>
-    <div class="cracker-log" id="crackLog">> starting dictionary attack...</div>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="btn" id="crackBtn" onclick="startCrack()" style="background:#ffbd2e;box-shadow:0 0 20px #ffbd2e;flex:1">▶ START CRACKING</button>
-      <button class="btn btn2" onclick="closeCracker()">CLOSE</button>
+<div id="main" style="display:none">
+  <div class="topbar"><div><b>ANDARMAX</b> <span>ACADEMY</span> <span style="color:var(--dim)">/ lab</span></div><div id="topRank" style="font-size:12px">RANK: NEWBIE</div></div>
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <h2 id="welcomeTitle">Selamat datang, BRO.</h2>
+        <p>Selesaikan 8 modul berurutan. Setiap modul menguji satu kemampuan dasar: password, phishing, jaringan, social engineering, SQLi, XSS, dan respons insiden.</p>
+        <div class="progress"><i id="xpFill"></i></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px"><span id="xpText">0 / 3000 XP</span><span id="badgeText">BADGE: —</span></div>
+      </div>
+      <div class="stat"><div class="big" id="levelText">LV 1</div><div class="small">LEVEL SAAT INI</div><div class="big" style="font-size:14px;margin-top:10px" id="doneText">0 / 8</div><div class="small">MODUL SELESAI</div></div>
     </div>
-  </div>
-</div>
 
-<!-- FAKE VIRUS -->
-<div id="virusModal">
-  <div class="virus-box">
-    <div style="font-size:55px">☠</div>
-    <h2 id="virusTitle">WARNING! VIRUS DETECTED!</h2>
-    <p id="virusSub">System lu terinfeksi! Semua foto & data akan dihapus<br>Jangan matikan HP / PC!</p>
-    <div class="virus-bar"><div class="virus-fill" id="virusFill"></div></div>
-    <div class="virus-pct" id="virusPct">FORMATTING... 0%</div>
-    <div class="virus-log" id="virusLog">> deleting /photos/DCIM...<br>> deleting /whatsapp/media...</div>
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-      <button class="btn btn-danger" id="virusBtn" onclick="startVirus()">▶ START FORMAT (PRANK)</button>
-      <button class="btn btn2" onclick="closeVirus()">BATAL / CLOSE</button>
+    <div id="certBanner" style="display:none;margin-top:16px;border:1px solid var(--green);background:rgba(51,255,102,.07);padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div><b style="color:#fff">Sertifikat tersedia.</b><div style="font-size:12px;color:var(--dim)">8/8 modul selesai. 3000 XP.</div></div>
+      <button class="btn primary" onclick="openCert()">Lihat Sertifikat →</button>
     </div>
+
+    <div class="term">
+      <div class="term-head"><span>root@andarmax: ~/lab</span><span>SIMULATED TERMINAL</span></div>
+      <div class="term-body" id="term"></div>
+      <div class="term-input"><span>root@andarmax:~$</span><input id="cmdInput" autocomplete="off" placeholder="ketik help"></div>
+    </div>
+
+    <div class="section-title">MODUL — KERJAKAN BERURUTAN</div>
+    <div id="missions"></div>
+    <div class="footer"><span>ANDARMAX ACADEMY — Dibuat untuk belajar pertahanan.</span><span>SIMULASI • TIDAK ADA DATA ASLI YANG DIPROSES</span></div>
   </div>
 </div>
 
-<div class="footer">MADE BY ANDARMAX • GITHUB PAGES • 2026 • PC & MOBILE • NO SYSTEM WAS HARMED</div>
+<div class="modal" id="quizModal"><div class="modal-box">
+  <h3 id="quizTitle">Modul</h3><p id="quizQ"></p><div id="quizCode"></div><div id="quizOpts"></div><div class="feedback" id="quizFeedback"></div>
+  <div class="row"><button class="btn" onclick="closeModal('quizModal')">Tutup</button></div>
+</div></div>
+
+<div class="modal" id="passModal"><div class="modal-box">
+  <h3>Modul 1 — Password</h3>
+  <p>Password yang kuat bukan yang rumit dihafal, tapi yang punya entropi: panjang, campuran karakter, dan tidak ada di daftar umum.</p>
+  <label style="margin-top:14px">UJI PASSWORD</label>
+  <input id="passTest" placeholder="contoh: Andar_TE18" oninput="checkPass()">
+  <div id="passScore" style="margin-top:10px;font-weight:700">Skor: 0 / 100</div>
+  <div id="passTips" style="font-size:12px;color:var(--dim);margin-top:6px"></div>
+  <div class="row"><button class="btn primary" onclick="submitPass()">Klaim 100 XP</button><button class="btn" onclick="closeModal('passModal')">Tutup</button></div>
+</div></div>
+
+<div class="modal" id="bossModal"><div class="modal-box">
+  <h3>Modul 8 — Respons Insiden</h3>
+  <p>Lab simulasi punya 3 temuan. Perbaiki dari terminal utama dalam 60 detik:</p>
+  <p style="margin-top:10px"><code>fix sql</code> — tutup SQLi dengan prepared statement<br><code>fix xss</code> — escape output<br><code>fix port</code> — tutup port 8080</p>
+  <div class="row"><button class="btn primary" onclick="startBoss()">Mulai 60 detik</button><button class="btn" onclick="closeModal('bossModal')">Tutup</button></div>
+</div></div>
+
+<!-- MODAL SERTIFIKAT -->
+<div class="modal" id="certModal"><div class="modal-box" style="max-width:720px;background:#fff;padding:0">
+  <div id="certDoc" class="cert">
+    <div class="cert-top"><b>ANDARMAX ACADEMY</b><span>LAB LOKAL • SIMULASI</span></div>
+    <h2>Sertifikat Penyelesaian</h2>
+    <div class="sub">Ethical Hacking — Dasar Pertahanan Sistem</div>
+    <div class="name" id="certName">BRO</div>
+    <div class="desc">Telah menyelesaikan 8 modul lab simulasi: Password, Phishing, Pemindaian Jaringan, Social Engineering, CTF Flag, SQL Injection (Defensif), XSS (Defensif), dan Respons Insiden. Total 3000 XP.</div>
+    <div class="cert-grid">
+      <div><span>NOMOR SERTIFIKAT</span><b id="certId">AMA-2026-0000</b></div>
+      <div><span>TANGGAL SELESAI</span><b id="certDate">—</b></div>
+      <div><span>RANK</span><b>MASTER WHITE HAT</b></div>
+      <div><span>VERIFIKASI</span><b>Lab lokal — bukan sertifikasi industri</b></div>
+    </div>
+    <div class="cert-sign"><div><div class="line">Peserta<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
+    <div class="cert-foot">Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin. Aktivitas ethical hacking yang sah selalu membutuhkan izin tertulis dari pemilik sistem.</div>
+  </div>
+  <div style="padding:16px;background:#111411;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" onclick="printCert()">Cetak / Simpan PDF</button>
+    <button class="btn" onclick="closeModal('certModal')">Tutup</button>
+  </div>
+</div></div>
+
+<div id="printArea"></div>
 
 <script>
-  const c=document.getElementById('matrix'); const ctx=c.getContext('2d');
-  function resizeCanvas(){ c.width=innerWidth; c.height=innerHeight; }
-  resizeCanvas(); addEventListener('resize', resizeCanvas);
-  const chars='01ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@!<>\\/|=+*';
-  const font=16; let drops=Array(Math.floor(c.width/font)).fill(1);
-  function draw(){ctx.fillStyle='rgba(0,0,0,0.08)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#00ff41';ctx.font=font+'px monospace';drops.forEach((y,i)=>{const t=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(t,i*font,y*font);if(y*font>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++;});}
-  setInterval(draw,33);
-
-  function toggleHackerPhoto(){
-    const img=document.getElementById('profileImg');
-    img.classList.toggle('hacker-mode');
-    playBeep(img.classList.contains('hacker-mode') ? 200 : 880, 0.15);
+const VALID_USER='bro', VALID_PASS='Andar_TE18';
+let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={sql:false,xss:false,port:false}, currentUser='BRO';
+const term=document.getElementById('term');
+function log(msg, cls=''){ const d=document.createElement('div'); if(cls) d.className=cls; d.innerHTML=msg; term.appendChild(d); term.scrollTop=term.scrollHeight; }
+function doLogin(){
+  const u=document.getElementById('userInput').value.trim(), p=document.getElementById('passInput').value.trim();
+  if(u.toLowerCase()===VALID_USER && p===VALID_PASS){
+    currentUser=u.toUpperCase();
+    document.getElementById('login').style.display='none';
+    document.getElementById('main').style.display='block';
+    document.getElementById('welcomeTitle').textContent='Selamat datang, '+currentUser+'.';
+    term.innerHTML=''; log('> andarmax academy — lab lokal dimuat','ok'); log('> mode: white hat. target: sistem simulasi internal.'); log('> ketik help untuk daftar perintah.'); renderMissions();
+  } else document.getElementById('loginErr').textContent='Kredensial salah. Periksa kembali.';
+}
+document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+function addXP(n,label){
+  xp+=n; const level = xp>=3000?4:xp>=1500?3:xp>=500?2:1;
+  document.getElementById('xpText').textContent=xp+' / 3000 XP';
+  document.getElementById('xpFill').style.width=Math.min(100,xp/3000*100)+'%';
+  document.getElementById('levelText').textContent='LV '+level;
+  document.getElementById('topRank').textContent='RANK: '+(level>=4?'MASTER WHITE HAT':level>=3?'ETHICAL HACKER':level>=2?'JUNIOR PENTESTER':'NEWBIE');
+  document.getElementById('badgeText').textContent='BADGE: '+(xp>=3000?'MASTER WHITE HAT':xp>=1500?'ETHICAL HACKER':xp>=500?'BUG HUNTER':xp>=200?'PHISHING HUNTER':'—');
+  document.getElementById('doneText').textContent=Object.keys(completed).length+' / 8';
+  if(label) log('> +'+n+' XP — '+label,'ok');
+  if(xp>=3000 && Object.keys(completed).length>=8){
+    document.getElementById('certBanner').style.display='flex';
+    log('> 8/8 modul selesai. Sertifikat tersedia. Ketik: certificate','ok');
   }
-
-  let soundOn=true; let audioCtx=null;
-  function playKey(){
-    if(!soundOn) return;
-    try{
-      if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-      if(audioCtx.state==='suspended') audioCtx.resume();
-      const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
-      o.type='square'; o.frequency.value=800+Math.random()*1200;
-      g.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.05);
-      o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.05);
-    }catch(e){}
+  renderMissions();
+}
+const missions=[
+  {id:'m1',t:'01 — Password',d:'Ukur kekuatan password. Syarat lulus: skor >= 80.',xp:100,need:0},
+  {id:'m2',t:'02 — Phishing',d:'Identifikasi pesan yang meminta OTP lewat link tidak resmi.',xp:200,need:100},
+  {id:'m3',t:'03 — Pemindaian Jaringan',d:'Jalankan scan di terminal. Catat port yang tidak perlu terbuka.',xp:300,need:300},
+  {id:'m4',t:'04 — Social Engineering',d:'Tentukan respons yang benar saat diminta kredensial.',xp:300,need:600},
+  {id:'m5',t:'05 — CTF: Flag',d:'Temukan flag yang disembunyikan di lab lewat terminal.',xp:600,need:900},
+  {id:'m6',t:'06 — SQL Injection (Defensif)',d:'Pilih perbaikan yang benar untuk query yang rentan.',xp:400,need:1500},
+  {id:'m7',t:'07 — XSS (Defensif)',d:'Pilih perbaikan yang benar untuk output yang tidak di-escape.',xp:400,need:1900},
+  {id:'m8',t:'08 — Respons Insiden',d:'Perbaiki 3 temuan dalam 60 detik lewat terminal.',xp:700,need:2300},
+];
+function renderMissions(){
+  const w=document.getElementById('missions'); w.innerHTML='';
+  missions.forEach(m=>{
+    const done=!!completed[m.id], locked=xp<m.need;
+    const el=document.createElement('div'); el.className='mission'+(done?' done':'')+(locked?' locked':'');
+    el.innerHTML=`<div><h3>${done?'✓ ':''}${m.t}</h3><p>${m.d}</p><div class="tag">${m.xp} XP • Syarat: ${m.need} XP ${done?'• Selesai':''}</div></div>`;
+    const b=document.createElement('button'); b.className='m-btn'; b.textContent=done?'Selesai':locked?'Terkunci':'Mulai'; b.disabled=done||locked; b.onclick=()=>startMission(m.id); el.appendChild(b); w.appendChild(el);
+  });
+}
+function startMission(id){
+  if(id==='m1') return openModal('passModal');
+  if(id==='m2') return openQuiz('02 — Phishing','Pesan masuk: "Akun Anda terblokir. Buka http://bank-aman-login.xyz dan masukkan OTP." Tindakan yang benar?',['Buka link dan masukkan OTP','Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.','Kirim password saja, OTP jangan'],'',1,'m2','Link tidak resmi + meminta OTP adalah pola phishing.');
+  if(id==='m3'){ log('> Modul 03: ketik scan di terminal.'); return document.getElementById('cmdInput').focus(); }
+  if(id==='m4') return openQuiz('04 — Social Engineering','Seseorang yang baru dikenal meminta password dan OTP "hanya sebentar". Respons yang benar?',['Berikan karena terlihat meyakinkan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
+  if(id==='m5'){ log('> Modul 05: ketik find flag di terminal.'); return; }
+  if(id==='m6') return openQuiz('06 — SQL Injection (Defensif)','Kode berikut rentan karena input digabung langsung ke query. Perbaikan yang benar?',['Sembunyikan pesan error','Gunakan prepared statement / parameterized query dan validasi input','Ganti nama tabel'],'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',1,'m6','Prepared statement memisahkan data dari perintah SQL.');
+  if(id==='m7') return openQuiz('07 — XSS (Defensif)','Komentar berisi <script>alert("x")</script> dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<script>alert("x")</script> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
+  if(id==='m8') return openModal('bossModal');
+}
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+function openQuiz(title,q,opts,code,correct,mid,explain){
+  openModal('quizModal'); document.getElementById('quizTitle').textContent=title; document.getElementById('quizQ').textContent=q;
+  document.getElementById('quizCode').innerHTML=code?`<div class="code">${code.replace(/</g,'&lt;')}</div>`:'';
+  document.getElementById('quizFeedback').textContent='';
+  const w=document.getElementById('quizOpts'); w.innerHTML='';
+  opts.forEach((o,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>{ if(i===correct){ document.getElementById('quizFeedback').textContent='Benar. '+explain; document.getElementById('quizFeedback').style.color='var(--green)'; if(!completed[mid]){ completed[mid]=true; const xpMap={m2:200,m4:300,m6:400,m7:400}; addXP(xpMap[mid]||100,'Modul selesai'); } } else { document.getElementById('quizFeedback').textContent='Belum tepat. Baca lagi dan coba ulang.'; document.getElementById('quizFeedback').style.color='var(--red)'; } }; w.appendChild(b); });
+}
+function checkPass(){
+  const v=document.getElementById('passTest').value; let s=0, tips=[];
+  if(v.length>=8) s+=20; else tips.push('Minimal 8 karakter.');
+  if(v.length>=12) s+=20;
+  if(/[A-Z]/.test(v)) s+=15; else tips.push('Tambah huruf besar.');
+  if(/[a-z]/.test(v)) s+=15; else tips.push('Tambah huruf kecil.');
+  if(/[0-9]/.test(v)) s+=15; else tips.push('Tambah angka.');
+  if(/[^A-Za-z0-9]/.test(v)) s+=15; else tips.push('Tambah simbol, contoh _ ! @');
+  if(/123456|password|qwerty/i.test(v)) s=10;
+  document.getElementById('passScore').textContent='Skor: '+s+' / 100'+(s>=80?' — Kuat':' — Lemah');
+  document.getElementById('passScore').style.color=s>=80?'var(--green)':'var(--yellow)';
+  document.getElementById('passTips').textContent=tips.join(' ')||'Memenuhi kriteria. Contoh yang valid: Andar_TE18';
+  window._s=s;
+}
+function submitPass(){
+  if((window._s||0)>=80){ if(!completed['m1']){ completed['m1']=true; addXP(100,'Password'); closeModal('passModal'); log('> Modul 01 selesai.','ok'); } }
+  else alert('Skor masih di bawah 80.');
+}
+function startBoss(){
+  closeModal('bossModal');
+  if(xp<2300){ log('> Boss terkunci. Butuh 2300 XP.','warn'); return; }
+  bossActive=true; bossTime=60; bossFixed={sql:false,xss:false,port:false};
+  log('> Boss dimulai. 60 detik. Perintah: fix sql, fix xss, fix port','warn');
+  clearInterval(bossId);
+  bossId=setInterval(()=>{ bossTime--; if(bossTime<=0){ clearInterval(bossId); bossActive=false; log('> Waktu habis. Lab tidak terselamatkan. Ulangi dari Modul 08.','bad'); } },1000);
+  document.getElementById('cmdInput').focus();
+}
+function bossCheck(){
+  log('> Status — SQL '+(bossFixed.sql?'✓':'✗')+' | XSS '+(bossFixed.xss?'✓':'✗')+' | Port '+(bossFixed.port?'✓':'✗')+' | Sisa '+bossTime+'s');
+  if(bossFixed.sql&&bossFixed.xss&&bossFixed.port){ clearInterval(bossId); bossActive=false; if(!completed['m8']){ completed['m8']=true; addXP(700,'Lab diselamatkan'); log('> Lab diselamatkan. Modul 08 selesai.','ok'); } }
+}
+function openCert(){
+  if(Object.keys(completed).length<8){ log('> Sertifikat terkunci. Selesaikan 8/8 modul.','warn'); return; }
+  const d=new Date(); const id='AMA-2026-'+String(Math.floor(1000+Math.random()*9000));
+  document.getElementById('certName').textContent=currentUser;
+  document.getElementById('certName2').textContent=currentUser;
+  document.getElementById('certId').textContent=id;
+  document.getElementById('certDate').textContent=d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  openModal('certModal');
+}
+function printCert(){
+  const html=document.getElementById('certDoc').outerHTML;
+  document.getElementById('printArea').innerHTML=html;
+  window.print();
+}
+document.getElementById('cmdInput').addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  const raw=e.target.value.trim(), cmd=raw.toLowerCase(); e.target.value='';
+  log('root@andarmax:~$ '+raw,'cmd');
+  if(cmd==='help') log('> help, whoami, ls, scan, find flag, fix sql, fix xss, fix port, certificate, clear');
+  else if(cmd==='whoami') log('> root — ANDARMAX — white hat — lab lokal');
+  else if(cmd==='ls') log('> lab/  passwords.txt  phishing_samples/  flag.txt');
+  else if(cmd==='certificate'||cmd==='cert') openCert();
+  else if(cmd==='scan'){
+    const ip='192.168.1.'+Math.floor(Math.random()*200+2);
+    log('> nmap -sV '+ip+' [LAB LOKAL — SIMULASI]'); log('> 22/tcp open ssh, 80/tcp open http, 443/tcp open https'); log('> 8080/tcp open — port ini tidak diperlukan, sebaiknya ditutup.','warn');
+    if(!completed['m3']&&xp>=300){ completed['m3']=true; addXP(300,'Pemindaian jaringan'); log('> Modul 03 selesai.','ok'); }
   }
-  function playBeep(freq=880,dur=0.15){
-    if(!soundOn) return;
-    try{
-      if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-      const o=audioCtx.createOscillator(); const g=audioCtx.createGain();
-      o.type='sine'; o.frequency.value=freq;
-      g.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
-      o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
-    }catch(e){}
+  else if(cmd==='find flag'||cmd==='findflag'){
+    log('> FLAG{ANDARMAX_WHITE_HAT_2026}','ok');
+    if(!completed['m5']&&xp>=900){ completed['m5']=true; addXP(600,'Flag ditemukan'); log('> Modul 05 selesai.','ok'); }
   }
-  function toggleSound(){ soundOn=!soundOn; document.getElementById('soundBtn').innerText = soundOn ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'; if(soundOn) playBeep(1000,0.1); }
-
-  function doLogin(){
-    const u=document.getElementById('userInput').value.trim();
-    const p=document.getElementById('passInput').value.trim();
-    playBeep(600,0.1);
-    if(u.toLowerCase()==='bro' && p==='hacker123'){
-      document.getElementById('loginErr').innerText='';
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('mainContent').style.display='flex';
-      document.getElementById('welcomeName').innerText=u.toUpperCase();
-      playBeep(880,0.2); setTimeout(()=>playBeep(1320,0.3),180);
-      startTerminal();
-    } else {
-      document.getElementById('loginErr').innerText='⛔ ACCESS DENIED! Username / Password salah bro';
-      document.body.style.animation='shake .3s'; setTimeout(()=>document.body.style.animation='',300);
-      playBeep(200,0.25);
-    }
+  else if(cmd==='fix sql'||cmd==='fix xss'||cmd==='fix port'){
+    if(!bossActive){ log('> Buka Modul 08 dulu untuk memulai timer.','warn'); return; }
+    const k=cmd==='fix sql'?'sql':cmd==='fix xss'?'xss':'port';
+    if(!bossFixed[k]){ bossFixed[k]=true; log('> '+k.toUpperCase()+' diperbaiki.','ok'); bossCheck(); } else log('> Sudah diperbaiki.');
   }
-  function logout(){ document.getElementById('mainContent').style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
-  document.getElementById('passInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); playKey(); });
-  document.getElementById('userInput').addEventListener('keydown', ()=>playKey());
-
-  const lines=["> initializing system...","> bypassing firewall... [OK]","> injecting payload... [OK]","> access granted. Welcome, ANDARMAX.","> PC & Mobile mode active. Pilih START HACKING."];
-  let li=0, ci=0; let termStarted=false;
-  const term=document.getElementById('term');
-  function startTerminal(){ if(termStarted) return; termStarted=true; li=0; ci=0; term.innerHTML=''; type(); }
-  function type(){
-    if(li>=lines.length){ term.innerHTML += '<span class="cursor"></span>'; return; }
-    if(ci<=lines[li].length){
-      term.innerHTML = lines.slice(0,li).join('<br>') + '<br>' + lines[li].slice(0,ci) + '<span class="cursor"></span>';
-      if(ci>0) playKey();
-      ci++; setTimeout(type, 28);
-    } else { li++; ci=0; setTimeout(type, 350); }
-  }
-  setInterval(()=>{
-    if(document.getElementById('mainContent').style.display==='flex'){
-      document.getElementById('cpu').innerText=Math.floor(Math.random()*40+45)+'%';
-      document.getElementById('ram').innerText=Math.floor(Math.random()*30+50)+'%';
-    }
-  },800);
-
-  const friends = ["rizky_", "budi_pratama", "siti.aja", "andi_ganteng", "putri_cantik", "dimas.exe", "fajar_123", "nabila", "galang", "citra", "yoga", "aulia"];
-  let hacked=0;
-  function startHack(){
-    hacked++; document.getElementById('hack').innerText=hacked;
-    const target = friends[Math.floor(Math.random()*friends.length)];
-    const ip = "192.168.1." + Math.floor(Math.random()*200+2);
-    const passwords = ["password123", "12345678", "sayangku", "qwerty", "bocil123"];
-    const pw = passwords[Math.floor(Math.random()*passwords.length)];
-    const extra=document.createElement('div');
-    extra.innerHTML=`> HACK SUCCESS #${hacked} - Target: @${target} [${ip}]<br>> Password ketemu: ${pw} [BREACHED] 🔓`;
-    term.appendChild(extra); term.scrollTop=term.scrollHeight;
-    document.body.style.animation='shake .3s'; setTimeout(()=>document.body.style.animation='',300);
-    playBeep(1200,0.12);
-  }
-
-  const targetPass='BRO2026';
-  let cracking=false; let crackedTotal=0;
-  function openCracker(){ document.getElementById('crackerModal').style.display='flex'; playBeep(700,0.1); }
-  function closeCracker(){ document.getElementById('crackerModal').style.display='none'; }
-  function startCrack(){
-    if(cracking) return; cracking=true;
-    const btn=document.getElementById('crackBtn'); btn.innerText='CRACKING...'; btn.disabled=true;
-    const passEl=document.getElementById('crackPass');
-    const bar=document.getElementById('crackBar');
-    const pct=document.getElementById('crackPct');
-    const log=document.getElementById('crackLog');
-    let progress=0; let revealed=0;
-    const interval=setInterval(()=>{
-      progress+=Math.random()*4+2;
-      if(progress>100) progress=100;
-      bar.style.width=progress+'%';
-      pct.innerText=Math.floor(progress)+'% - BRUTE FORCE... '+Math.floor(progress*1234)+' combinations';
-      let display='';
-      for(let i=0;i<targetPass.length;i++){
-        if(i<revealed) display+=targetPass[i];
-        else display+=chars[Math.floor(Math.random()*chars.length)];
-      }
-      passEl.innerText=display;
-      if(Math.random()>0.85) playKey();
-      if(progress > (revealed+1)*12 && revealed<targetPass.length){
-        revealed++; playBeep(900+revealed*100,0.08);
-        log.innerHTML += `<br>> char ${revealed} found: ${targetPass[revealed-1]}`;
-      }
-      if(progress>=100){
-        clearInterval(interval);
-        passEl.innerText=targetPass; passEl.style.color='#00ff41';
-        pct.innerText='100% - PASSWORD CRACKED! ✅';
-        log.innerHTML += `<br>> ✅ SUCCESS! Password: ${targetPass}`;
-        btn.innerText='▶ CRACK AGAIN'; btn.disabled=false; cracking=false;
-        crackedTotal++; document.getElementById('crackedCount').innerText=crackedTotal;
-        playBeep(880,0.15); setTimeout(()=>playBeep(1320,0.25),150);
-      }
-    }, 90);
-  }
-
-  let virusRunning=false;
-  function openVirus(){ document.getElementById('virusModal').style.display='flex'; playBeep(200,0.3); }
-  function closeVirus(){ document.getElementById('virusModal').style.display='none'; virusRunning=false; document.getElementById('virusTitle').innerText='WARNING! VIRUS DETECTED!'; document.getElementById('virusTitle').style.color='#ff3b3b'; document.getElementById('virusSub').innerHTML='System lu terinfeksi! Semua foto & data akan dihapus<br>Jangan matikan HP / PC!'; document.getElementById('virusFill').style.width='0%'; document.getElementById('virusPct').innerText='FORMATTING... 0%'; document.getElementById('virusBtn').innerText='▶ START FORMAT (PRANK)'; document.getElementById('virusBtn').disabled=false; }
-  function startVirus(){
-    if(virusRunning) return; virusRunning=true;
-    document.getElementById('virusBtn').innerText='FORMATTING...'; document.getElementById('virusBtn').disabled=true;
-    let p=0;
-    const logs=["> deleting /photos/DCIM...","> deleting /whatsapp/media...","> deleting /contacts...","> deleting /gallery...","> deleting /tiktok/cache...","> wiping system..."];
-    let li2=0;
-    const iv=setInterval(()=>{
-      p+=Math.random()*5+2; if(p>100) p=100;
-      document.getElementById('virusFill').style.width=p+'%';
-      document.getElementById('virusPct').innerText='FORMATTING... '+Math.floor(p)+'%';
-      document.body.style.animation='shake .2s'; setTimeout(()=>document.body.style.animation='',200);
-      if(Math.random()>0.7) playBeep(150,0.1);
-      if(li2<logs.length && p > (li2+1)*15){ document.getElementById('virusLog').innerHTML+='<br>'+logs[li2]; li2++; }
-      if(p>=100){
-        clearInterval(iv);
-        document.getElementById('virusTitle').innerText='😂 KENA PRANK BRO!';
-        document.getElementById('virusTitle').style.color='#00ff41';
-        document.getElementById('virusSub').innerHTML='TENANG! Gak ada yang kehapus! Ini cuma prank!<br>HP / PC lu aman 100%. Share ke temen lu biar dia panik juga!';
-        document.getElementById('virusPct').innerText='PRANK SUCCESS! ✅';
-        document.getElementById('virusLog').innerHTML+='<br>> ✅ JUST KIDDING! NO DATA DELETED';
-        document.getElementById('virusBtn').innerText='😂 PRANK LAGI'; document.getElementById('virusBtn').disabled=false; virusRunning=false;
-        playBeep(880,0.2); setTimeout(()=>playBeep(1320,0.3),200);
-      }
-    },120);
-  }
+  else if(cmd==='clear') term.innerHTML='';
+  else if(cmd===''){}
+  else log('> Perintah tidak dikenal: '+raw+' — ketik help','bad');
+});
 </script>
 </body>
 </html>
