@@ -19,6 +19,7 @@
   button{font-family:inherit;cursor:pointer}
   .btn-primary{width:100%;margin-top:18px;background:var(--green);color:#000;border:0;padding:12px;font-weight:700;letter-spacing:.05em}
   .btn-primary:hover{background:#fff}
+  .btn-ghost{width:100%;margin-top:8px;background:transparent;border:1px solid var(--line);color:var(--dim);padding:10px;font-size:12px}
   .err{color:var(--red);font-size:12px;min-height:16px;margin-top:10px}
   .hint{margin-top:16px;font-size:12px;color:var(--dim)}
   .topbar{position:sticky;top:0;z-index:5;background:rgba(10,12,10,.96);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
@@ -65,7 +66,6 @@
   .btn.primary{background:var(--green);color:#000;border-color:var(--green)}
   .feedback{margin-top:12px;font-size:12px;min-height:18px}
   .footer{margin-top:28px;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  /* SERTIFIKAT - BERSIH, BISA CETAK */
   .cert{width:100%;max-width:680px;background:#fff;color:#111;padding:36px 40px;text-align:left}
   .cert-top{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:16px}
   .cert-top b{letter-spacing:.15em;font-size:13px}
@@ -91,12 +91,14 @@
     <h1>ANDARMAX <span>ACADEMY</span></h1>
     <div class="meta">LAB LOKAL — ETHICAL HACKING / WHITE HAT<br>Semua aktivitas berjalan di simulasi. Tidak ada sistem eksternal yang diakses.</div>
     <label>USERNAME</label>
-    <input id="userInput" value="bro" autocomplete="off">
+    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none">
     <label>PASSWORD</label>
-    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off">
+    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none">
     <button class="btn-primary" onclick="doLogin()">MASUK LAB →</button>
+    <button class="btn-ghost" onclick="togglePass()">👁 Lihat Password</button>
+    <button class="btn-ghost" onclick="autoLogin()">Masuk Otomatis (Tes)</button>
     <div class="err" id="loginErr"></div>
-    <div class="hint">Kredensial lab: <b style="color:#fff">bro</b> / <b style="color:#fff">Andar_TE18</b><br>Ini hanya untuk membuka simulasi, bukan akun nyata.</div>
+    <div class="hint">Kredensial lab: <b style="color:#fff">bro</b> / <b style="color:#fff">Andar_TE18</b><br>Password peka huruf besar/kecil. Perhatikan _ dan E besar.</div>
   </div>
 </div>
 
@@ -113,7 +115,7 @@
       <div class="stat"><div class="big" id="levelText">LV 1</div><div class="small">LEVEL SAAT INI</div><div class="big" style="font-size:14px;margin-top:10px" id="doneText">0 / 8</div><div class="small">MODUL SELESAI</div></div>
     </div>
 
-    <div id="certBanner" style="display:none;margin-top:16px;border:1px solid var(--green);background:rgba(51,255,102,.07);padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+    <div id="certBanner" style="display:none;margin-top:16px;border:1px solid var(--green);background:rgba(51,255,102,.07);padding:14px;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
       <div><b style="color:#fff">Sertifikat tersedia.</b><div style="font-size:12px;color:var(--dim)">8/8 modul selesai. 3000 XP.</div></div>
       <button class="btn primary" onclick="openCert()">Lihat Sertifikat →</button>
     </div>
@@ -152,7 +154,6 @@
   <div class="row"><button class="btn primary" onclick="startBoss()">Mulai 60 detik</button><button class="btn" onclick="closeModal('bossModal')">Tutup</button></div>
 </div></div>
 
-<!-- MODAL SERTIFIKAT -->
 <div class="modal" id="certModal"><div class="modal-box" style="max-width:720px;background:#fff;padding:0">
   <div id="certDoc" class="cert">
     <div class="cert-top"><b>ANDARMAX ACADEMY</b><span>LAB LOKAL • SIMULASI</span></div>
@@ -181,18 +182,27 @@
 const VALID_USER='bro', VALID_PASS='Andar_TE18';
 let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={sql:false,xss:false,port:false}, currentUser='BRO';
 const term=document.getElementById('term');
+function clean(s){ return (s||'').replace(/[\u200B-\u200D\uFEFF\s]+/g,'').trim(); }
 function log(msg, cls=''){ const d=document.createElement('div'); if(cls) d.className=cls; d.innerHTML=msg; term.appendChild(d); term.scrollTop=term.scrollHeight; }
+function togglePass(){ const p=document.getElementById('passInput'); p.type = p.type==='password' ? 'text' : 'password'; }
+function autoLogin(){ document.getElementById('userInput').value='bro'; document.getElementById('passInput').value='Andar_TE18'; doLogin(); }
 function doLogin(){
-  const u=document.getElementById('userInput').value.trim(), p=document.getElementById('passInput').value.trim();
-  if(u.toLowerCase()===VALID_USER && p===VALID_PASS){
+  const rawU=document.getElementById('userInput').value;
+  const rawP=document.getElementById('passInput').value;
+  const u=clean(rawU).toLowerCase();
+  const p=clean(rawP);
+  if(u===VALID_USER && p===VALID_PASS){
     currentUser=u.toUpperCase();
     document.getElementById('login').style.display='none';
     document.getElementById('main').style.display='block';
     document.getElementById('welcomeTitle').textContent='Selamat datang, '+currentUser+'.';
     term.innerHTML=''; log('> andarmax academy — lab lokal dimuat','ok'); log('> mode: white hat. target: sistem simulasi internal.'); log('> ketik help untuk daftar perintah.'); renderMissions();
-  } else document.getElementById('loginErr').textContent='Kredensial salah. Periksa kembali.';
+  } else {
+    document.getElementById('loginErr').textContent='Kredensial salah. Kamu isi: ['+rawU+'] / ['+rawP.replace(/./g,'*')+'] — Harusnya: bro / Andar_TE18';
+  }
 }
 document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('userInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 function addXP(n,label){
   xp+=n; const level = xp>=3000?4:xp>=1500?3:xp>=500?2:1;
   document.getElementById('xpText').textContent=xp+' / 3000 XP';
@@ -234,7 +244,7 @@ function startMission(id){
   if(id==='m4') return openQuiz('04 — Social Engineering','Seseorang yang baru dikenal meminta password dan OTP "hanya sebentar". Respons yang benar?',['Berikan karena terlihat meyakinkan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
   if(id==='m5'){ log('> Modul 05: ketik find flag di terminal.'); return; }
   if(id==='m6') return openQuiz('06 — SQL Injection (Defensif)','Kode berikut rentan karena input digabung langsung ke query. Perbaikan yang benar?',['Sembunyikan pesan error','Gunakan prepared statement / parameterized query dan validasi input','Ganti nama tabel'],'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',1,'m6','Prepared statement memisahkan data dari perintah SQL.');
-  if(id==='m7') return openQuiz('07 — XSS (Defensif)','Komentar berisi <script>alert("x")</script> dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<script>alert("x")</script> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
+  if(id==='m7') return openQuiz('07 — XSS (Defensif)','Komentar berisi tag script alert(x) dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<scr'+'ipt>alert("x")<\/scr'+'ipt> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
   if(id==='m8') return openModal('bossModal');
 }
 function openModal(id){ document.getElementById(id).style.display='flex'; }
