@@ -5,82 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANDARMAX ACADEMY — Lab</title>
 <style>
-  :root{ --bg:#0a0c0a; --panel:#111411; --line:#232823; --green:#33ff66; --dim:#8a938a; --yellow:#e8c33c; --red:#ff4d4d; --blue:#6db3ff; }
+  :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#2fbf5a; }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:#d6ddd6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.55}
-  #login{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:#000}
-  .login-box{width:100%;max-width:380px;border:1px solid var(--line);background:var(--panel);padding:28px}
-  .login-box h1{font-size:18px;letter-spacing:.12em;color:#fff;font-weight:700}
-  .login-box h1 span{color:var(--green)}
-  .login-box .meta{font-size:12px;color:var(--dim);margin:8px 0 22px;border-bottom:1px solid var(--line);padding-bottom:14px}
-  label{font-size:11px;letter-spacing:.1em;color:var(--dim);display:block;margin:14px 0 6px}
-  input{width:100%;background:#000;border:1px solid var(--line);color:#fff;padding:11px 12px;outline:none;font-size:14px;font-family:inherit}
+  body{background:var(--bg);color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.6}
+  input,button{font-family:inherit;font-size:13px}
+  input{width:100%;background:#000;border:1px solid var(--line);color:#fff;padding:10px 11px;outline:none}
   input:focus{border-color:var(--green)}
-  button{font-family:inherit;cursor:pointer}
-  .btn-primary{width:100%;margin-top:18px;background:var(--green);color:#000;border:0;padding:12px;font-weight:700;letter-spacing:.05em}
-  .btn-primary:hover{background:#fff}
-  .btn-ghost{width:100%;margin-top:8px;background:transparent;border:1px solid var(--line);color:var(--dim);padding:10px;font-size:12px}
-  .err{color:var(--red);font-size:12px;min-height:16px;margin-top:10px}
-  .hint{margin-top:16px;font-size:12px;color:var(--dim)}
-  .topbar{position:sticky;top:0;z-index:5;background:rgba(10,12,10,.96);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
-  .topbar b{color:#fff;letter-spacing:.1em}
+  button{cursor:pointer}
+  /* login */
+  #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#000}
+  .login-box{width:100%;max-width:360px;border:1px solid var(--line);background:var(--panel);padding:24px}
+  .login-box h1{font-size:15px;color:#fff;letter-spacing:.08em}
+  .login-box h1 span{color:var(--green)}
+  .login-box .meta{font-size:12px;color:var(--dim);margin:8px 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  label{font-size:11px;color:var(--dim);letter-spacing:.08em;display:block;margin:12px 0 5px}
+  .btn-primary{width:100%;margin-top:16px;background:var(--green);color:#000;border:0;padding:11px;font-weight:700}
+  .err{color:#ff5c5c;font-size:12px;min-height:16px;margin-top:10px}
+  .hint{margin-top:14px;font-size:12px;color:var(--dim)}
+  /* main */
+  .topbar{border-bottom:1px solid var(--line);padding:11px 16px;display:flex;justify-content:space-between;color:#fff;font-size:12px;letter-spacing:.06em}
   .topbar span{color:var(--green)}
-  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
-  .head{border:1px solid var(--line);background:var(--panel);padding:18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-  .head h2{font-size:22px;color:#fff;line-height:1.2}
-  .head p{color:var(--dim);font-size:12px;margin-top:6px;max-width:480px}
-  .stat{text-align:right}
-  .stat .big{font-size:22px;color:var(--green);font-weight:700}
-  .stat .small{font-size:11px;color:var(--dim);letter-spacing:.08em}
-  .progress{height:6px;background:#1c201c;margin-top:14px}
-  .progress i{display:block;height:100%;background:var(--green);width:0;transition:width .4s}
-  .term{margin-top:16px;border:1px solid var(--line);background:#080a08}
-  .term-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-size:11px;color:var(--dim);letter-spacing:.06em}
-  .term-body{padding:14px;min-height:180px;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+  .wrap{max-width:720px;margin:0 auto;padding:18px 14px 40px}
+  .head{border:1px solid var(--line);background:var(--panel);padding:16px}
+  .head h2{font-size:18px;color:#fff;font-weight:700}
+  .head p{color:var(--dim);font-size:12px;margin-top:5px}
+  .progress{height:4px;background:#1c1e1c;margin-top:14px}
+  .progress i{display:block;height:100%;background:var(--green);width:0}
+  .meta-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px}
+  .cert-line{display:none;margin-top:12px;border:1px solid var(--line);padding:11px 12px;font-size:12px}
+  .cert-line button{background:transparent;border:1px solid var(--green);color:var(--green);padding:6px 10px;margin-left:10px}
+  /* terminal */
+  .term{margin-top:14px;border:1px solid var(--line);background:#080a08}
+  .term-head{padding:9px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--dim);display:flex;justify-content:space-between}
+  .term-body{padding:12px;min-height:170px;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
   .term-body .cmd{color:#fff}
   .term-body .ok{color:var(--green)}
-  .term-body .warn{color:var(--yellow)}
-  .term-body .bad{color:var(--red)}
-  .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:10px 12px;align-items:center}
+  .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:9px 12px}
   .term-input span{color:var(--green);white-space:nowrap}
   .term-input input{border:0;background:transparent;padding:0}
-  .section-title{margin:22px 0 10px;font-size:11px;letter-spacing:.14em;color:var(--dim)}
-  .mission{border:1px solid var(--line);background:var(--panel);padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
-  .mission.done{border-left:3px solid var(--green)}
-  .mission.locked{opacity:.55}
-  .mission h3{font-size:14px;color:#fff}
-  .mission p{font-size:12px;color:var(--dim);margin-top:5px;max-width:520px}
-  .mission .tag{font-size:11px;color:var(--yellow);margin-top:8px}
-  .m-btn{flex-shrink:0;background:transparent;border:1px solid var(--green);color:var(--green);padding:9px 12px;font-size:12px;font-weight:700}
+  /* modul */
+  .section{margin:20px 0 8px;font-size:11px;letter-spacing:.12em;color:var(--dim)}
+  .mission{border:1px solid var(--line);background:var(--panel);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+  .mission.done{border-left:2px solid var(--green)}
+  .mission.locked{opacity:.5}
+  .mission h3{font-size:13px;color:#fff}
+  .mission p{font-size:12px;color:var(--dim);margin-top:3px}
+  .mission .tag{font-size:11px;color:var(--dim);margin-top:6px}
+  .m-btn{flex-shrink:0;background:transparent;border:1px solid var(--green);color:var(--green);padding:8px 11px;font-size:12px}
   .m-btn:disabled{border-color:var(--line);color:var(--dim);cursor:not-allowed}
-  .m-btn:hover:not(:disabled){background:var(--green);color:#000}
   .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);padding:16px}
-  .modal-box{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);padding:20px;max-height:90vh;overflow-y:auto}
-  .modal-box h3{color:#fff;font-size:16px;margin-bottom:10px}
-  .modal-box p{font-size:13px;color:#c8cec8}
-  .modal-box .code{background:#000;border:1px solid var(--line);padding:12px;margin:12px 0;font-size:12px;overflow-x:auto;white-space:pre}
-  .opt{display:block;width:100%;text-align:left;background:#000;border:1px solid var(--line);color:#d6ddd6;padding:11px;margin-top:8px;font-size:13px}
-  .opt:hover{border-color:var(--green)}
-  .row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  .btn{padding:10px 14px;border:1px solid var(--line);background:#000;color:#d6ddd6;font-weight:700}
-  .btn.primary{background:var(--green);color:#000;border-color:var(--green)}
-  .feedback{margin-top:12px;font-size:12px;min-height:18px}
-  .footer{margin-top:28px;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .cert{width:100%;max-width:680px;background:#fff;color:#111;padding:36px 40px;text-align:left}
-  .cert-top{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:16px}
-  .cert-top b{letter-spacing:.15em;font-size:13px}
-  .cert-top span{font-size:11px;color:#555}
-  .cert h2{font-size:28px;margin:28px 0 6px;line-height:1.1;color:#000}
-  .cert .sub{font-size:13px;color:#444}
-  .cert .name{font-size:32px;font-weight:800;margin:22px 0 4px;border-bottom:1px solid #111;padding-bottom:8px}
-  .cert .desc{font-size:13px;line-height:1.6;color:#333;max-width:560px}
-  .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding:16px 0;font-size:12px}
-  .cert-grid div span{display:block;color:#777;font-size:10px;letter-spacing:.12em;margin-bottom:4px}
-  .cert-sign{display:flex;justify-content:space-between;margin-top:28px;font-size:12px}
-  .cert-sign .line{border-top:1px solid #111;padding-top:6px;min-width:180px}
-  .cert-foot{margin-top:20px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:10px}
-  @media(max-width:560px){ .mission{flex-direction:column} .m-btn{width:100%} .cert{padding:24px} .cert-grid{grid-template-columns:1fr} }
-  @media print{ body{background:#fff} #login,#main,.modal{display:none!important} #printArea{display:block!important} }
+  .modal-box{width:100%;max-width:540px;background:var(--panel);border:1px solid var(--line);padding:18px;max-height:90vh;overflow-y:auto}
+  .modal-box h3{color:#fff;font-size:15px;margin-bottom:8px}
+  .modal-box p{font-size:13px;color:#c5c9c5}
+  .modal-box .code{background:#000;border:1px solid var(--line);padding:11px;margin:11px 0;font-size:12px;overflow-x:auto}
+  .opt{display:block;width:100%;text-align:left;background:#000;border:1px solid var(--line);color:var(--text);padding:10px;margin-top:7px}
+  .row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+  .btn{padding:9px 13px;border:1px solid var(--line);background:#000;color:var(--text)}
+  .btn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+  .feedback{margin-top:11px;font-size:12px;min-height:16px}
+  .footer{margin-top:24px;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:11px}
+  /* sertifikat */
+  .cert{width:100%;max-width:680px;background:#fff;color:#111;padding:32px 36px;text-align:left}
+  .cert-top{display:flex;justify-content:space-between;border-bottom:1px solid #111;padding-bottom:12px;font-size:12px}
+  .cert h2{font-size:26px;margin:24px 0 4px;color:#000}
+  .cert .sub{font-size:12px;color:#444}
+  .cert .name{font-size:30px;font-weight:800;margin:20px 0 4px;border-bottom:1px solid #111;padding-bottom:6px}
+  .cert .desc{font-size:12px;line-height:1.6;color:#333}
+  .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding:14px 0;font-size:12px}
+  .cert-grid span{display:block;color:#777;font-size:10px;letter-spacing:.1em;margin-bottom:3px}
+  .cert-sign{display:flex;justify-content:space-between;margin-top:24px;font-size:12px}
+  .cert-sign .line{border-top:1px solid #111;padding-top:5px;min-width:170px}
+  .cert-foot{margin-top:18px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:9px}
+  @media(max-width:560px){.mission{flex-direction:column}.m-btn{width:100%}.cert{padding:22px}.cert-grid{grid-template-columns:1fr}}
+  @media print{body{background:#fff}#login,#main,.modal{display:none!important}#printArea{display:block!important}}
   #printArea{display:none}
 </style>
 </head>
@@ -89,46 +86,38 @@
 <div id="login">
   <div class="login-box">
     <h1>ANDARMAX <span>ACADEMY</span></h1>
-    <div class="meta">LAB LOKAL — ETHICAL HACKING / WHITE HAT<br>Semua aktivitas berjalan di simulasi. Tidak ada sistem eksternal yang diakses.</div>
+    <div class="meta">Lab simulasi. Ethical hacking / white hat.</div>
     <label>USERNAME</label>
     <input id="userInput" value="bro" autocomplete="off" autocapitalize="none">
     <label>PASSWORD</label>
     <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none">
-    <button class="btn-primary" onclick="doLogin()">MASUK LAB →</button>
-    <button class="btn-ghost" onclick="togglePass()">👁 Lihat Password</button>
-    <button class="btn-ghost" onclick="autoLogin()">Masuk Otomatis (Tes)</button>
+    <button class="btn-primary" onclick="doLogin()">Masuk</button>
     <div class="err" id="loginErr"></div>
-    <div class="hint">Kredensial lab: <b style="color:#fff">bro</b> / <b style="color:#fff">Andar_TE18</b><br>Password peka huruf besar/kecil. Perhatikan _ dan E besar.</div>
+    <div class="hint">Lab: bro / Andar_TE18</div>
   </div>
 </div>
 
 <div id="main" style="display:none">
-  <div class="topbar"><div><b>ANDARMAX</b> <span>ACADEMY</span> <span style="color:var(--dim)">/ lab</span></div><div id="topRank" style="font-size:12px">RANK: NEWBIE</div></div>
+  <div class="topbar"><div>ANDARMAX <span>ACADEMY</span></div><div id="topRank">NEWBIE</div></div>
   <div class="wrap">
     <div class="head">
-      <div>
-        <h2 id="welcomeTitle">Selamat datang, BRO.</h2>
-        <p>Selesaikan 8 modul berurutan. Setiap modul menguji satu kemampuan dasar: password, phishing, jaringan, social engineering, SQLi, XSS, dan respons insiden.</p>
-        <div class="progress"><i id="xpFill"></i></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px"><span id="xpText">0 / 3000 XP</span><span id="badgeText">BADGE: —</span></div>
-      </div>
-      <div class="stat"><div class="big" id="levelText">LV 1</div><div class="small">LEVEL SAAT INI</div><div class="big" style="font-size:14px;margin-top:10px" id="doneText">0 / 8</div><div class="small">MODUL SELESAI</div></div>
+      <h2 id="welcomeTitle">BRO</h2>
+      <p>8 modul. Password, phishing, jaringan, social engineering, SQLi, XSS, respons insiden.</p>
+      <div class="progress"><i id="xpFill"></i></div>
+      <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span></div>
     </div>
 
-    <div id="certBanner" style="display:none;margin-top:16px;border:1px solid var(--green);background:rgba(51,255,102,.07);padding:14px;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
-      <div><b style="color:#fff">Sertifikat tersedia.</b><div style="font-size:12px;color:var(--dim)">8/8 modul selesai. 3000 XP.</div></div>
-      <button class="btn primary" onclick="openCert()">Lihat Sertifikat →</button>
-    </div>
+    <div id="certBanner" class="cert-line">Sertifikat tersedia. 8/8 modul selesai.<button onclick="openCert()">Lihat</button></div>
 
     <div class="term">
-      <div class="term-head"><span>root@andarmax: ~/lab</span><span>SIMULATED TERMINAL</span></div>
+      <div class="term-head"><span>root@andarmax: ~/lab</span><span>SIMULASI</span></div>
       <div class="term-body" id="term"></div>
-      <div class="term-input"><span>root@andarmax:~$</span><input id="cmdInput" autocomplete="off" placeholder="ketik help"></div>
+      <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" placeholder="help"></div>
     </div>
 
-    <div class="section-title">MODUL — KERJAKAN BERURUTAN</div>
+    <div class="section">MODUL</div>
     <div id="missions"></div>
-    <div class="footer"><span>ANDARMAX ACADEMY — Dibuat untuk belajar pertahanan.</span><span>SIMULASI • TIDAK ADA DATA ASLI YANG DIPROSES</span></div>
+    <div class="footer">ANDARMAX ACADEMY — Simulasi. Tidak ada data asli yang diproses.</div>
   </div>
 </div>
 
@@ -138,20 +127,20 @@
 </div></div>
 
 <div class="modal" id="passModal"><div class="modal-box">
-  <h3>Modul 1 — Password</h3>
-  <p>Password yang kuat bukan yang rumit dihafal, tapi yang punya entropi: panjang, campuran karakter, dan tidak ada di daftar umum.</p>
-  <label style="margin-top:14px">UJI PASSWORD</label>
-  <input id="passTest" placeholder="contoh: Andar_TE18" oninput="checkPass()">
+  <h3>01 — Password</h3>
+  <p>Ukur entropi: panjang, campuran karakter, tidak ada di daftar umum.</p>
+  <label style="margin-top:12px">UJI PASSWORD</label>
+  <input id="passTest" placeholder="Andar_TE18" oninput="checkPass()">
   <div id="passScore" style="margin-top:10px;font-weight:700">Skor: 0 / 100</div>
-  <div id="passTips" style="font-size:12px;color:var(--dim);margin-top:6px"></div>
+  <div id="passTips" style="font-size:12px;color:var(--dim);margin-top:5px"></div>
   <div class="row"><button class="btn primary" onclick="submitPass()">Klaim 100 XP</button><button class="btn" onclick="closeModal('passModal')">Tutup</button></div>
 </div></div>
 
 <div class="modal" id="bossModal"><div class="modal-box">
-  <h3>Modul 8 — Respons Insiden</h3>
-  <p>Lab simulasi punya 3 temuan. Perbaiki dari terminal utama dalam 60 detik:</p>
-  <p style="margin-top:10px"><code>fix sql</code> — tutup SQLi dengan prepared statement<br><code>fix xss</code> — escape output<br><code>fix port</code> — tutup port 8080</p>
-  <div class="row"><button class="btn primary" onclick="startBoss()">Mulai 60 detik</button><button class="btn" onclick="closeModal('bossModal')">Tutup</button></div>
+  <h3>08 — Respons Insiden</h3>
+  <p>Perbaiki dari terminal dalam 60 detik:</p>
+  <p style="margin-top:10px"><code>fix sql</code> — prepared statement<br><code>fix xss</code> — escape output<br><code>fix port</code> — tutup port 8080</p>
+  <div class="row"><button class="btn primary" onclick="startBoss()">Mulai</button><button class="btn" onclick="closeModal('bossModal')">Tutup</button></div>
 </div></div>
 
 <div class="modal" id="certModal"><div class="modal-box" style="max-width:720px;background:#fff;padding:0">
@@ -160,17 +149,17 @@
     <h2>Sertifikat Penyelesaian</h2>
     <div class="sub">Ethical Hacking — Dasar Pertahanan Sistem</div>
     <div class="name" id="certName">BRO</div>
-    <div class="desc">Telah menyelesaikan 8 modul lab simulasi: Password, Phishing, Pemindaian Jaringan, Social Engineering, CTF Flag, SQL Injection (Defensif), XSS (Defensif), dan Respons Insiden. Total 3000 XP.</div>
+    <div class="desc">Menyelesaikan 8 modul lab simulasi: Password, Phishing, Pemindaian Jaringan, Social Engineering, CTF Flag, SQL Injection (Defensif), XSS (Defensif), dan Respons Insiden. Total 3000 XP.</div>
     <div class="cert-grid">
-      <div><span>NOMOR SERTIFIKAT</span><b id="certId">AMA-2026-0000</b></div>
-      <div><span>TANGGAL SELESAI</span><b id="certDate">—</b></div>
+      <div><span>NOMOR</span><b id="certId">AMA-2026-0000</b></div>
+      <div><span>TANGGAL</span><b id="certDate">—</b></div>
       <div><span>RANK</span><b>MASTER WHITE HAT</b></div>
-      <div><span>VERIFIKASI</span><b>Lab lokal — bukan sertifikasi industri</b></div>
+      <div><span>KETERANGAN</span><b>Lab lokal — bukan sertifikasi industri</b></div>
     </div>
     <div class="cert-sign"><div><div class="line">Peserta<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
-    <div class="cert-foot">Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin. Aktivitas ethical hacking yang sah selalu membutuhkan izin tertulis dari pemilik sistem.</div>
+    <div class="cert-foot">Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin. Ethical hacking yang sah membutuhkan izin tertulis dari pemilik sistem.</div>
   </div>
-  <div style="padding:16px;background:#111411;display:flex;gap:8px;flex-wrap:wrap">
+  <div style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="printCert()">Cetak / Simpan PDF</button>
     <button class="btn" onclick="closeModal('certModal')">Tutup</button>
   </div>
@@ -184,22 +173,16 @@ let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={s
 const term=document.getElementById('term');
 function clean(s){ return (s||'').replace(/[\u200B-\u200D\uFEFF\s]+/g,'').trim(); }
 function log(msg, cls=''){ const d=document.createElement('div'); if(cls) d.className=cls; d.innerHTML=msg; term.appendChild(d); term.scrollTop=term.scrollHeight; }
-function togglePass(){ const p=document.getElementById('passInput'); p.type = p.type==='password' ? 'text' : 'password'; }
-function autoLogin(){ document.getElementById('userInput').value='bro'; document.getElementById('passInput').value='Andar_TE18'; doLogin(); }
 function doLogin(){
-  const rawU=document.getElementById('userInput').value;
-  const rawP=document.getElementById('passInput').value;
-  const u=clean(rawU).toLowerCase();
-  const p=clean(rawP);
+  const u=clean(document.getElementById('userInput').value).toLowerCase();
+  const p=clean(document.getElementById('passInput').value);
   if(u===VALID_USER && p===VALID_PASS){
     currentUser=u.toUpperCase();
     document.getElementById('login').style.display='none';
     document.getElementById('main').style.display='block';
-    document.getElementById('welcomeTitle').textContent='Selamat datang, '+currentUser+'.';
-    term.innerHTML=''; log('> andarmax academy — lab lokal dimuat','ok'); log('> mode: white hat. target: sistem simulasi internal.'); log('> ketik help untuk daftar perintah.'); renderMissions();
-  } else {
-    document.getElementById('loginErr').textContent='Kredensial salah. Kamu isi: ['+rawU+'] / ['+rawP.replace(/./g,'*')+'] — Harusnya: bro / Andar_TE18';
-  }
+    document.getElementById('welcomeTitle').textContent=currentUser;
+    term.innerHTML=''; log('> lab dimuat. ketik help.','ok'); renderMissions();
+  } else document.getElementById('loginErr').textContent='Kredensial salah. Cek: bro / Andar_TE18';
 }
 document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('userInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
@@ -207,23 +190,18 @@ function addXP(n,label){
   xp+=n; const level = xp>=3000?4:xp>=1500?3:xp>=500?2:1;
   document.getElementById('xpText').textContent=xp+' / 3000 XP';
   document.getElementById('xpFill').style.width=Math.min(100,xp/3000*100)+'%';
-  document.getElementById('levelText').textContent='LV '+level;
-  document.getElementById('topRank').textContent='RANK: '+(level>=4?'MASTER WHITE HAT':level>=3?'ETHICAL HACKER':level>=2?'JUNIOR PENTESTER':'NEWBIE');
-  document.getElementById('badgeText').textContent='BADGE: '+(xp>=3000?'MASTER WHITE HAT':xp>=1500?'ETHICAL HACKER':xp>=500?'BUG HUNTER':xp>=200?'PHISHING HUNTER':'—');
-  document.getElementById('doneText').textContent=Object.keys(completed).length+' / 8';
+  document.getElementById('topRank').textContent= level>=4?'MASTER WHITE HAT':level>=3?'ETHICAL HACKER':level>=2?'JUNIOR PENTESTER':'NEWBIE';
+  document.getElementById('doneText').textContent=Object.keys(completed).length+' / 8 selesai';
   if(label) log('> +'+n+' XP — '+label,'ok');
-  if(xp>=3000 && Object.keys(completed).length>=8){
-    document.getElementById('certBanner').style.display='flex';
-    log('> 8/8 modul selesai. Sertifikat tersedia. Ketik: certificate','ok');
-  }
+  if(xp>=3000 && Object.keys(completed).length>=8){ document.getElementById('certBanner').style.display='block'; log('> 8/8 selesai. ketik: certificate','ok'); }
   renderMissions();
 }
 const missions=[
-  {id:'m1',t:'01 — Password',d:'Ukur kekuatan password. Syarat lulus: skor >= 80.',xp:100,need:0},
+  {id:'m1',t:'01 — Password',d:'Ukur kekuatan password. Lulus: skor >= 80.',xp:100,need:0},
   {id:'m2',t:'02 — Phishing',d:'Identifikasi pesan yang meminta OTP lewat link tidak resmi.',xp:200,need:100},
-  {id:'m3',t:'03 — Pemindaian Jaringan',d:'Jalankan scan di terminal. Catat port yang tidak perlu terbuka.',xp:300,need:300},
+  {id:'m3',t:'03 — Pemindaian Jaringan',d:'Jalankan scan. Catat port yang tidak perlu terbuka.',xp:300,need:300},
   {id:'m4',t:'04 — Social Engineering',d:'Tentukan respons yang benar saat diminta kredensial.',xp:300,need:600},
-  {id:'m5',t:'05 — CTF: Flag',d:'Temukan flag yang disembunyikan di lab lewat terminal.',xp:600,need:900},
+  {id:'m5',t:'05 — CTF: Flag',d:'Temukan flag di lab lewat terminal.',xp:600,need:900},
   {id:'m6',t:'06 — SQL Injection (Defensif)',d:'Pilih perbaikan yang benar untuk query yang rentan.',xp:400,need:1500},
   {id:'m7',t:'07 — XSS (Defensif)',d:'Pilih perbaikan yang benar untuk output yang tidak di-escape.',xp:400,need:1900},
   {id:'m8',t:'08 — Respons Insiden',d:'Perbaiki 3 temuan dalam 60 detik lewat terminal.',xp:700,need:2300},
@@ -240,9 +218,9 @@ function renderMissions(){
 function startMission(id){
   if(id==='m1') return openModal('passModal');
   if(id==='m2') return openQuiz('02 — Phishing','Pesan masuk: "Akun Anda terblokir. Buka http://bank-aman-login.xyz dan masukkan OTP." Tindakan yang benar?',['Buka link dan masukkan OTP','Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.','Kirim password saja, OTP jangan'],'',1,'m2','Link tidak resmi + meminta OTP adalah pola phishing.');
-  if(id==='m3'){ log('> Modul 03: ketik scan di terminal.'); return document.getElementById('cmdInput').focus(); }
-  if(id==='m4') return openQuiz('04 — Social Engineering','Seseorang yang baru dikenal meminta password dan OTP "hanya sebentar". Respons yang benar?',['Berikan karena terlihat meyakinkan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
-  if(id==='m5'){ log('> Modul 05: ketik find flag di terminal.'); return; }
+  if(id==='m3'){ log('> Modul 03: ketik scan.'); return document.getElementById('cmdInput').focus(); }
+  if(id==='m4') return openQuiz('04 — Social Engineering','Seseorang yang baru dikenal meminta password dan OTP "hanya sebentar". Respons yang benar?',['Berikan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
+  if(id==='m5'){ log('> Modul 05: ketik find flag.'); return; }
   if(id==='m6') return openQuiz('06 — SQL Injection (Defensif)','Kode berikut rentan karena input digabung langsung ke query. Perbaikan yang benar?',['Sembunyikan pesan error','Gunakan prepared statement / parameterized query dan validasi input','Ganti nama tabel'],'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',1,'m6','Prepared statement memisahkan data dari perintah SQL.');
   if(id==='m7') return openQuiz('07 — XSS (Defensif)','Komentar berisi tag script alert(x) dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<scr'+'ipt>alert("x")<\/scr'+'ipt> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
   if(id==='m8') return openModal('bossModal');
@@ -254,7 +232,7 @@ function openQuiz(title,q,opts,code,correct,mid,explain){
   document.getElementById('quizCode').innerHTML=code?`<div class="code">${code.replace(/</g,'&lt;')}</div>`:'';
   document.getElementById('quizFeedback').textContent='';
   const w=document.getElementById('quizOpts'); w.innerHTML='';
-  opts.forEach((o,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>{ if(i===correct){ document.getElementById('quizFeedback').textContent='Benar. '+explain; document.getElementById('quizFeedback').style.color='var(--green)'; if(!completed[mid]){ completed[mid]=true; const xpMap={m2:200,m4:300,m6:400,m7:400}; addXP(xpMap[mid]||100,'Modul selesai'); } } else { document.getElementById('quizFeedback').textContent='Belum tepat. Baca lagi dan coba ulang.'; document.getElementById('quizFeedback').style.color='var(--red)'; } }; w.appendChild(b); });
+  opts.forEach((o,i)=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>{ if(i===correct){ document.getElementById('quizFeedback').textContent='Benar. '+explain; document.getElementById('quizFeedback').style.color='var(--green)'; if(!completed[mid]){ completed[mid]=true; const xpMap={m2:200,m4:300,m6:400,m7:400}; addXP(xpMap[mid]||100,'Modul selesai'); } } else { document.getElementById('quizFeedback').textContent='Belum tepat.'; document.getElementById('quizFeedback').style.color='#ff5c5c'; } }; w.appendChild(b); });
 }
 function checkPass(){
   const v=document.getElementById('passTest').value; let s=0, tips=[];
@@ -266,8 +244,8 @@ function checkPass(){
   if(/[^A-Za-z0-9]/.test(v)) s+=15; else tips.push('Tambah simbol, contoh _ ! @');
   if(/123456|password|qwerty/i.test(v)) s=10;
   document.getElementById('passScore').textContent='Skor: '+s+' / 100'+(s>=80?' — Kuat':' — Lemah');
-  document.getElementById('passScore').style.color=s>=80?'var(--green)':'var(--yellow)';
-  document.getElementById('passTips').textContent=tips.join(' ')||'Memenuhi kriteria. Contoh yang valid: Andar_TE18';
+  document.getElementById('passScore').style.color=s>=80?'var(--green)':'#e8c33c';
+  document.getElementById('passTips').textContent=tips.join(' ')||'Memenuhi kriteria.';
   window._s=s;
 }
 function submitPass(){
@@ -276,19 +254,19 @@ function submitPass(){
 }
 function startBoss(){
   closeModal('bossModal');
-  if(xp<2300){ log('> Boss terkunci. Butuh 2300 XP.','warn'); return; }
+  if(xp<2300){ log('> Terkunci. Butuh 2300 XP.'); return; }
   bossActive=true; bossTime=60; bossFixed={sql:false,xss:false,port:false};
-  log('> Boss dimulai. 60 detik. Perintah: fix sql, fix xss, fix port','warn');
+  log('> Mulai. 60 detik. Perintah: fix sql, fix xss, fix port');
   clearInterval(bossId);
-  bossId=setInterval(()=>{ bossTime--; if(bossTime<=0){ clearInterval(bossId); bossActive=false; log('> Waktu habis. Lab tidak terselamatkan. Ulangi dari Modul 08.','bad'); } },1000);
+  bossId=setInterval(()=>{ bossTime--; if(bossTime<=0){ clearInterval(bossId); bossActive=false; log('> Waktu habis. Ulangi dari Modul 08.'); } },1000);
   document.getElementById('cmdInput').focus();
 }
 function bossCheck(){
-  log('> Status — SQL '+(bossFixed.sql?'✓':'✗')+' | XSS '+(bossFixed.xss?'✓':'✗')+' | Port '+(bossFixed.port?'✓':'✗')+' | Sisa '+bossTime+'s');
-  if(bossFixed.sql&&bossFixed.xss&&bossFixed.port){ clearInterval(bossId); bossActive=false; if(!completed['m8']){ completed['m8']=true; addXP(700,'Lab diselamatkan'); log('> Lab diselamatkan. Modul 08 selesai.','ok'); } }
+  log('> Status — SQL '+(bossFixed.sql?'OK':'-')+' | XSS '+(bossFixed.xss?'OK':'-')+' | Port '+(bossFixed.port?'OK':'-')+' | Sisa '+bossTime+'s');
+  if(bossFixed.sql&&bossFixed.xss&&bossFixed.port){ clearInterval(bossId); bossActive=false; if(!completed['m8']){ completed['m8']=true; addXP(700,'Modul 08 selesai'); } }
 }
 function openCert(){
-  if(Object.keys(completed).length<8){ log('> Sertifikat terkunci. Selesaikan 8/8 modul.','warn'); return; }
+  if(Object.keys(completed).length<8){ log('> Sertifikat terkunci. Selesaikan 8/8 modul.'); return; }
   const d=new Date(); const id='AMA-2026-'+String(Math.floor(1000+Math.random()*9000));
   document.getElementById('certName').textContent=currentUser;
   document.getElementById('certName2').textContent=currentUser;
@@ -297,35 +275,34 @@ function openCert(){
   openModal('certModal');
 }
 function printCert(){
-  const html=document.getElementById('certDoc').outerHTML;
-  document.getElementById('printArea').innerHTML=html;
+  document.getElementById('printArea').innerHTML=document.getElementById('certDoc').outerHTML;
   window.print();
 }
 document.getElementById('cmdInput').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   const raw=e.target.value.trim(), cmd=raw.toLowerCase(); e.target.value='';
-  log('root@andarmax:~$ '+raw,'cmd');
+  log('$ '+raw,'cmd');
   if(cmd==='help') log('> help, whoami, ls, scan, find flag, fix sql, fix xss, fix port, certificate, clear');
-  else if(cmd==='whoami') log('> root — ANDARMAX — white hat — lab lokal');
+  else if(cmd==='whoami') log('> root — ANDARMAX — lab lokal');
   else if(cmd==='ls') log('> lab/  passwords.txt  phishing_samples/  flag.txt');
   else if(cmd==='certificate'||cmd==='cert') openCert();
   else if(cmd==='scan'){
     const ip='192.168.1.'+Math.floor(Math.random()*200+2);
-    log('> nmap -sV '+ip+' [LAB LOKAL — SIMULASI]'); log('> 22/tcp open ssh, 80/tcp open http, 443/tcp open https'); log('> 8080/tcp open — port ini tidak diperlukan, sebaiknya ditutup.','warn');
-    if(!completed['m3']&&xp>=300){ completed['m3']=true; addXP(300,'Pemindaian jaringan'); log('> Modul 03 selesai.','ok'); }
+    log('> nmap -sV '+ip+' [LAB LOKAL — SIMULASI]'); log('> 22/tcp open ssh, 80/tcp open http, 443/tcp open https'); log('> 8080/tcp open — tidak diperlukan, sebaiknya ditutup.');
+    if(!completed['m3']&&xp>=300){ completed['m3']=true; addXP(300,'Modul 03 selesai'); }
   }
   else if(cmd==='find flag'||cmd==='findflag'){
     log('> FLAG{ANDARMAX_WHITE_HAT_2026}','ok');
-    if(!completed['m5']&&xp>=900){ completed['m5']=true; addXP(600,'Flag ditemukan'); log('> Modul 05 selesai.','ok'); }
+    if(!completed['m5']&&xp>=900){ completed['m5']=true; addXP(600,'Modul 05 selesai'); }
   }
   else if(cmd==='fix sql'||cmd==='fix xss'||cmd==='fix port'){
-    if(!bossActive){ log('> Buka Modul 08 dulu untuk memulai timer.','warn'); return; }
+    if(!bossActive){ log('> Buka Modul 08 dulu.'); return; }
     const k=cmd==='fix sql'?'sql':cmd==='fix xss'?'xss':'port';
     if(!bossFixed[k]){ bossFixed[k]=true; log('> '+k.toUpperCase()+' diperbaiki.','ok'); bossCheck(); } else log('> Sudah diperbaiki.');
   }
   else if(cmd==='clear') term.innerHTML='';
   else if(cmd===''){}
-  else log('> Perintah tidak dikenal: '+raw+' — ketik help','bad');
+  else log('> Perintah tidak dikenal: '+raw+' — ketik help');
 });
 </script>
 </body>
