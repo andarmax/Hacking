@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ANDARMAX ACADEMY — Lab</title>
+<title>ANDARMAX ACADEMY — Kasus 01</title>
 <style>
   :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#2fbf5a; }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -13,7 +13,7 @@
   input:focus{border-color:var(--green)}
   button{cursor:pointer}
   #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#000}
-  .login-box{width:100%;max-width:360px;border:1px solid var(--line);background:var(--panel);padding:24px}
+  .login-box{width:100%;max-width:380px;border:1px solid var(--line);background:var(--panel);padding:24px}
   .login-box h1{font-size:15px;color:#fff;letter-spacing:.08em}
   .login-box h1 span{color:var(--green)}
   .login-box .meta{font-size:12px;color:var(--dim);margin:8px 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
@@ -31,13 +31,20 @@
   .progress{height:4px;background:#1c1e1c;margin-top:14px}
   .progress i{display:block;height:100%;background:var(--green);width:0}
   .meta-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px}
+  .case{margin-top:14px;border:1px solid var(--line);background:var(--panel);padding:14px}
+  .case .kicker{font-size:11px;letter-spacing:.12em;color:var(--green)}
+  .case h3{font-size:14px;color:#fff;margin:5px 0 6px}
+  .case p{font-size:12px;color:#c5c9c5}
+  .case .files{margin-top:10px;font-size:12px;color:var(--dim);border-top:1px solid var(--line);padding-top:9px}
+  .case .files code{color:var(--text)}
   .cert-line{display:none;margin-top:12px;border:1px solid var(--line);padding:11px 12px;font-size:12px}
   .cert-line button{background:transparent;border:1px solid var(--green);color:var(--green);padding:6px 10px;margin-left:10px}
   .term{margin-top:14px;border:1px solid var(--line);background:#080a08}
   .term-head{padding:9px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--dim);display:flex;justify-content:space-between}
-  .term-body{padding:12px;min-height:170px;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+  .term-body{padding:12px;min-height:200px;max-height:320px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
   .term-body .cmd{color:#fff}
   .term-body .ok{color:var(--green)}
+  .term-body .warn{color:#e8c33c}
   .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:9px 12px}
   .term-input span{color:var(--green);white-space:nowrap}
   .term-input input{border:0;background:transparent;padding:0}
@@ -83,15 +90,15 @@
 <div id="login">
   <div class="login-box">
     <h1>ANDARMAX <span>ACADEMY</span></h1>
-    <div class="meta">Lab simulasi. Ethical hacking / white hat.</div>
+    <div class="meta">Kasus 01 — PT Nusantara Retail (Fiktif)<br>Lab simulasi. Audit atas izin, dalam cerita game.</div>
     <label>NAMA / USERNAME</label>
-    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none" placeholder="contoh: bro">
-    <label>PASSWORD <span style="color:var(--dim)">— KOSONGKAN UNTUK MODE TAMU</span></label>
-    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none" placeholder="kosongkan untuk tamu">
+    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none">
+    <label>PASSWORD — KOSONGKAN UNTUK TAMU</label>
+    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none">
     <button class="btn-primary" onclick="doLogin()">Masuk</button>
     <button class="btn-ghost" onclick="guestLogin()">Main Sebagai Tamu</button>
     <div class="err" id="loginErr"></div>
-    <div class="hint">Lab: bro / Andar_TE18<br>Tamu: isi nama saja, password dikosongkan.</div>
+    <div class="hint">Lab: bro / Andar_TE18<br>Tamu: isi nama saja, kosongkan password.</div>
   </div>
 </div>
 
@@ -100,22 +107,31 @@
   <div class="wrap">
     <div class="head">
       <h2 id="welcomeTitle">BRO</h2>
-      <p>8 modul. Password, phishing, jaringan, social engineering, SQLi, XSS, respons insiden.</p>
+      <p>Kasus 01. Audit PT Nusantara Retail. Kumpulkan bukti, perbaiki 3 temuan, tulis laporan.</p>
       <div class="progress"><i id="xpFill"></i></div>
       <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span><span id="timeText">Waktu: 00:00</span></div>
     </div>
 
-    <div id="certBanner" class="cert-line">Sertifikat tersedia. 8/8 modul selesai.<button onclick="openCert()">Lihat</button><button onclick="openShare()">Bagikan</button></div>
-
-    <div class="term">
-      <div class="term-head"><span>root@andarmax: ~/lab</span><span>SIMULASI</span></div>
-      <div class="term-body" id="term"></div>
-      <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" placeholder="help"></div>
+    <div class="case">
+      <div class="kicker">BRIEFING — EMAIL DARI HR (FIKTIF)</div>
+      <h3>PT Nusantara Retail meminta audit</h3>
+      <p>Dari: hr@nusantara-retail.test — Kepada: Pentester<br><br>
+      "Rina (Staff Finance) melaporkan email aneh yang meminta OTP. Server kami juga terasa lambat sejak kemarin. Kami memberi izin audit untuk sistem simulasi ini. Tolong periksa: email Rina, log server, dan website internal kami. Jangan ubah data asli. Laporkan temuanmu."</p>
+      <div class="files">Target fiktif: <code>nusantara-retail.test</code> • Server: <code>192.168.10.5</code> • User: <code>rina.finance</code><br>
+      Bukti di terminal: <code>cat email-rina.txt</code> • <code>cat chat-rina.txt</code> • <code>cat log.txt</code> • <code>cat backup.txt</code></div>
     </div>
 
-    <div class="section">MODUL</div>
+    <div id="certBanner" class="cert-line">Audit selesai. Laporan tersedia.<button onclick="openCert()">Laporan + Sertifikat</button><button onclick="openShare()">Bagikan</button></div>
+
+    <div class="term">
+      <div class="term-head"><span>root@andarmax: ~/kasus-01</span><span>SIMULASI</span></div>
+      <div class="term-body" id="term"></div>
+      <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" placeholder="help — coba: cat email-rina.txt"></div>
+    </div>
+
+    <div class="section">BUKTI & MODUL — KERJAKAN BERURUTAN</div>
     <div id="missions"></div>
-    <div class="footer">ANDARMAX ACADEMY — Simulasi. Tidak ada data asli yang diproses.</div>
+    <div class="footer">ANDARMAX ACADEMY — Semua nama, email, IP, dan perusahaan dalam kasus ini fiktif. Simulasi untuk belajar pertahanan.</div>
   </div>
 </div>
 
@@ -125,37 +141,37 @@
 </div></div>
 
 <div class="modal" id="passModal"><div class="modal-box">
-  <h3>01 — Password</h3>
-  <p>Ukur entropi: panjang, campuran karakter, tidak ada di daftar umum.</p>
+  <h3>01 — Password Rina</h3>
+  <p>Di log, password Rina tercatat lemah. Uji seberapa lemah, lalu tentukan standar yang benar.</p>
   <label style="margin-top:12px">UJI PASSWORD</label>
-  <input id="passTest" placeholder="Andar_TE18" oninput="checkPass()">
+  <input id="passTest" placeholder="coba: rina123" oninput="checkPass()">
   <div id="passScore" style="margin-top:10px;font-weight:700">Skor: 0 / 100</div>
   <div id="passTips" style="font-size:12px;color:var(--dim);margin-top:5px"></div>
   <div class="row"><button class="btn primary" onclick="submitPass()">Klaim 100 XP</button><button class="btn" onclick="closeModal('passModal')">Tutup</button></div>
 </div></div>
 
 <div class="modal" id="bossModal"><div class="modal-box">
-  <h3>08 — Respons Insiden</h3>
-  <p>Perbaiki dari terminal dalam 60 detik:</p>
+  <h3>08 — Perbaiki Sebelum Server Dimatikan</h3>
+  <p>HR akan mematikan server dalam 60 detik untuk maintenance. Perbaiki 3 temuan dari terminal:</p>
   <p style="margin-top:10px"><code>fix sql</code> — prepared statement<br><code>fix xss</code> — escape output<br><code>fix port</code> — tutup port 8080</p>
   <div class="row"><button class="btn primary" onclick="startBoss()">Mulai</button><button class="btn" onclick="closeModal('bossModal')">Tutup</button></div>
 </div></div>
 
 <div class="modal" id="certModal"><div class="modal-box" style="max-width:720px;background:#fff;padding:0">
   <div id="certDoc" class="cert">
-    <div class="cert-top"><b>ANDARMAX ACADEMY</b><span>LAB LOKAL • SIMULASI</span></div>
-    <h2>Sertifikat Penyelesaian</h2>
-    <div class="sub">Ethical Hacking — Dasar Pertahanan Sistem</div>
+    <div class="cert-top"><b>ANDARMAX ACADEMY</b><span>KASUS 01 • SIMULASI</span></div>
+    <h2>Laporan Audit + Sertifikat</h2>
+    <div class="sub">Kasus 01 — PT Nusantara Retail (Fiktif) • Ethical Hacking — Dasar Pertahanan Sistem</div>
     <div class="name" id="certName">BRO</div>
-    <div class="desc">Menyelesaikan 8 modul lab simulasi: Password, Phishing, Pemindaian Jaringan, Social Engineering, CTF Flag, SQL Injection (Defensif), XSS (Defensif), dan Respons Insiden. Total 3000 XP.</div>
+    <div class="desc">Pentester menyelesaikan audit simulasi:<br>1. Password lemah pada akun rina.finance — direkomendasikan rotasi + MFA<br>2. Phishing mengatasnamakan bank, meminta OTP — diblokir, dilaporkan<br>3. Port 8080 terbuka tanpa keperluan — ditutup<br>4. SQL Injection pada login internal — diperbaiki dengan prepared statement<br>5. XSS pada kolom komentar — diperbaiki dengan escape output + CSP<br>Total 3000 XP.</div>
     <div class="cert-grid">
       <div><span>NOMOR</span><b id="certId">AMA-2026-0000</b></div>
       <div><span>TANGGAL</span><b id="certDate">—</b></div>
-      <div><span>RANK</span><b>MASTER WHITE HAT</b></div>
-      <div><span>WAKTU PENYELESAIAN</span><b id="certTime">—</b></div>
+      <div><span>WAKTU AUDIT</span><b id="certTime">—</b></div>
+      <div><span>KETERANGAN</span><b>Lab lokal — bukan sertifikasi industri</b></div>
     </div>
-    <div class="cert-sign"><div><div class="line">Peserta<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
-    <div class="cert-foot">Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin. Ethical hacking yang sah membutuhkan izin tertulis dari pemilik sistem.</div>
+    <div class="cert-sign"><div><div class="line">Pentester<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
+    <div class="cert-foot">Semua nama, email, IP, dan perusahaan dalam laporan ini fiktif. Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin.</div>
   </div>
   <div style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="printCert()">Cetak / Simpan PDF</button>
@@ -166,7 +182,7 @@
 
 <div class="modal" id="shareModal"><div class="modal-box">
   <h3>Bagikan Hasil</h3>
-  <p>Salin teks ini ke WA / IG Story. Ini yang bikin temanmu penasaran dan ikut main.</p>
+  <p>Salin teks ini ke WA / IG Story.</p>
   <div class="share-box" id="shareText"></div>
   <div class="row">
     <button class="btn primary" onclick="copyShare()">Salin Teks</button>
@@ -193,7 +209,12 @@ function enterLab(name){
   document.getElementById('login').style.display='none';
   document.getElementById('main').style.display='block';
   document.getElementById('welcomeTitle').textContent=currentUser;
-  term.innerHTML=''; log('> lab dimuat. ketik help.','ok'); renderMissions(); startTimer();
+  term.innerHTML='';
+  log('> Kasus 01 dimuat. Target fiktif: nusantara-retail.test','ok');
+  log('> Izin audit: diberikan HR dalam cerita game.');
+  log('> Mulai dari bukti: cat email-rina.txt');
+  log('> ketik help untuk daftar perintah.');
+  renderMissions(); startTimer();
 }
 function doLogin(){
   const rawName=document.getElementById('userInput').value.trim();
@@ -217,18 +238,18 @@ function addXP(n,label){
   document.getElementById('topRank').textContent= level>=4?'MASTER WHITE HAT':level>=3?'ETHICAL HACKER':level>=2?'JUNIOR PENTESTER':'NEWBIE';
   document.getElementById('doneText').textContent=Object.keys(completed).length+' / 8 selesai';
   if(label) log('> +'+n+' XP — '+label,'ok');
-  if(xp>=3000 && Object.keys(completed).length>=8){ stopTimer(); document.getElementById('certBanner').style.display='block'; log('> 8/8 selesai. Waktu: '+finalTime+'. ketik: certificate atau share','ok'); }
+  if(xp>=3000 && Object.keys(completed).length>=8){ stopTimer(); document.getElementById('certBanner').style.display='block'; log('> Audit selesai. Waktu: '+finalTime+'. ketik: certificate atau share','ok'); }
   renderMissions();
 }
 const missions=[
-  {id:'m1',t:'01 — Password',d:'Ukur kekuatan password. Lulus: skor >= 80.',xp:100,need:0},
-  {id:'m2',t:'02 — Phishing',d:'Identifikasi pesan yang meminta OTP lewat link tidak resmi.',xp:200,need:100},
-  {id:'m3',t:'03 — Pemindaian Jaringan',d:'Jalankan scan. Catat port yang tidak perlu terbuka.',xp:300,need:300},
-  {id:'m4',t:'04 — Social Engineering',d:'Tentukan respons yang benar saat diminta kredensial.',xp:300,need:600},
-  {id:'m5',t:'05 — CTF: Flag',d:'Temukan flag di lab lewat terminal.',xp:600,need:900},
-  {id:'m6',t:'06 — SQL Injection (Defensif)',d:'Pilih perbaikan yang benar untuk query yang rentan.',xp:400,need:1500},
-  {id:'m7',t:'07 — XSS (Defensif)',d:'Pilih perbaikan yang benar untuk output yang tidak di-escape.',xp:400,need:1900},
-  {id:'m8',t:'08 — Respons Insiden',d:'Perbaiki 3 temuan dalam 60 detik lewat terminal.',xp:700,need:2300},
+  {id:'m1',t:'01 — Password Rina',d:'Dari log: password Rina lemah. Uji dan tentukan standar yang benar.',xp:100,need:0},
+  {id:'m2',t:'02 — Email Phishing ke Rina',d:'Email yang diterima Rina meminta OTP lewat link tidak resmi.',xp:200,need:100},
+  {id:'m3',t:'03 — Scan Server 192.168.10.5',d:'Scan server fiktif. Catat port yang tidak perlu terbuka.',xp:300,need:300},
+  {id:'m4',t:'04 — Chat Social Engineering',d:'Seseorang mengaku dari IT meminta kredensial Rina.',xp:300,need:600},
+  {id:'m5',t:'05 — File Backup',d:'Temukan flag di backup.txt lewat terminal.',xp:600,need:900},
+  {id:'m6',t:'06 — SQLi di Login Internal',d:'Login internal rentan. Pilih perbaikan yang benar.',xp:400,need:1500},
+  {id:'m7',t:'07 — XSS di Komentar Internal',d:'Komentar internal menampilkan script apa adanya.',xp:400,need:1900},
+  {id:'m8',t:'08 — Perbaiki Sebelum Maintenance',d:'Perbaiki 3 temuan dalam 60 detik.',xp:700,need:2300},
 ];
 function renderMissions(){
   const w=document.getElementById('missions'); w.innerHTML='';
@@ -241,12 +262,12 @@ function renderMissions(){
 }
 function startMission(id){
   if(id==='m1') return openModal('passModal');
-  if(id==='m2') return openQuiz('02 — Phishing','Pesan masuk: "Akun Anda terblokir. Buka http://bank-aman-login.xyz dan masukkan OTP." Tindakan yang benar?',['Buka link dan masukkan OTP','Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.','Kirim password saja, OTP jangan'],'',1,'m2','Link tidak resmi + meminta OTP adalah pola phishing.');
+  if(id==='m2') return openQuiz('02 — Email Phishing ke Rina','Rina menerima email ini. Baca juga bukti: cat email-rina.txt. Tindakan yang benar?',['Buka link dan masukkan OTP','Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.','Kirim password saja, OTP jangan'],'',1,'m2','Link tidak resmi + meminta OTP adalah pola phishing.');
   if(id==='m3'){ log('> Modul 03: ketik scan.'); return document.getElementById('cmdInput').focus(); }
-  if(id==='m4') return openQuiz('04 — Social Engineering','Seseorang yang baru dikenal meminta password dan OTP "hanya sebentar". Respons yang benar?',['Berikan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
-  if(id==='m5'){ log('> Modul 05: ketik find flag.'); return; }
-  if(id==='m6') return openQuiz('06 — SQL Injection (Defensif)','Kode berikut rentan karena input digabung langsung ke query. Perbaikan yang benar?',['Sembunyikan pesan error','Gunakan prepared statement / parameterized query dan validasi input','Ganti nama tabel'],'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',1,'m6','Prepared statement memisahkan data dari perintah SQL.');
-  if(id==='m7') return openQuiz('07 — XSS (Defensif)','Komentar berisi tag script alert(x) dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<scr'+'ipt>alert("x")<\/scr'+'ipt> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
+  if(id==='m4') return openQuiz('04 — Chat Social Engineering','Baca bukti: cat chat-rina.txt. Seseorang mengaku dari IT meminta password dan OTP Rina. Respons yang benar?',['Berikan','Tolak. OTP dan password tidak dibagikan ke siapa pun.','Berikan OTP saja'],'',1,'m4','Tidak ada alasan yang sah untuk meminta OTP orang lain.');
+  if(id==='m5'){ log('> Modul 05: ketik cat backup.txt atau find flag.'); return; }
+  if(id==='m6') return openQuiz('06 — SQLi di Login Internal','Login internal PT Nusantara Retail (fiktif) rentan karena input digabung langsung ke query. Perbaikan yang benar?',['Sembunyikan pesan error','Gunakan prepared statement / parameterized query dan validasi input','Ganti nama tabel'],'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',1,'m6','Prepared statement memisahkan data dari perintah SQL.');
+  if(id==='m7') return openQuiz('07 — XSS di Komentar Internal','Komentar internal berisi tag script dan tampil apa adanya. Perbaikan yang benar?',['Biarkan, hanya alert','Escape / sanitasi output dan terapkan Content Security Policy','Hapus fitur komentar'],'<scr'+'ipt>alert("x")<\/scr'+'ipt> Halo!',1,'m7','Output dari pengguna harus di-escape sebelum dirender.');
   if(id==='m8') return openModal('bossModal');
 }
 function openModal(id){ document.getElementById(id).style.display='flex'; }
@@ -266,7 +287,7 @@ function checkPass(){
   if(/[a-z]/.test(v)) s+=15; else tips.push('Tambah huruf kecil.');
   if(/[0-9]/.test(v)) s+=15; else tips.push('Tambah angka.');
   if(/[^A-Za-z0-9]/.test(v)) s+=15; else tips.push('Tambah simbol, contoh _ ! @');
-  if(/123456|password|qwerty/i.test(v)) s=10;
+  if(/123456|password|qwerty|rina123/i.test(v)) s=10;
   document.getElementById('passScore').textContent='Skor: '+s+' / 100'+(s>=80?' — Kuat':' — Lemah');
   document.getElementById('passScore').style.color=s>=80?'var(--green)':'#e8c33c';
   document.getElementById('passTips').textContent=tips.join(' ')||'Memenuhi kriteria.';
@@ -290,7 +311,7 @@ function bossCheck(){
   if(bossFixed.sql&&bossFixed.xss&&bossFixed.port){ clearInterval(bossId); bossActive=false; if(!completed['m8']){ completed['m8']=true; addXP(700,'Modul 08 selesai'); } }
 }
 function openCert(){
-  if(Object.keys(completed).length<8){ log('> Sertifikat terkunci. Selesaikan 8/8 modul.'); return; }
+  if(Object.keys(completed).length<8){ log('> Laporan terkunci. Selesaikan 8/8 modul.'); return; }
   stopTimer();
   const d=new Date(); const id='AMA-2026-'+String(Math.floor(1000+Math.random()*9000));
   document.getElementById('certName').textContent=currentUser;
@@ -307,7 +328,7 @@ function printCert(){
 function getShareText(){
   const t = Object.keys(completed).length>=8 ? finalTime : 'belum selesai';
   const link = location.href;
-  return 'ANDARMAX ACADEMY — Lab Selesai\n' + currentUser + ' — MASTER WHITE HAT\n8/8 modul • 3000 XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + link;
+  return 'ANDARMAX ACADEMY — Kasus 01 Selesai\n' + currentUser + ' — Audit PT Nusantara Retail (Fiktif)\n8/8 bukti • 3000 XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + link;
 }
 function openShare(){
   closeModal('certModal');
@@ -324,22 +345,39 @@ function shareWA(){
   const url='https://wa.me/?text='+encodeURIComponent(getShareText());
   window.open(url,'_blank');
 }
+const FILES={
+  'email-rina.txt': 'Dari: bank-aman-login.xyz (PALSU — bukan domain bank asli)\nKepada: rina.finance@nusantara-retail.test\nSubjek: Akun Anda Terblokir\n\n"Halo Rina, akun Anda terblokir. Buka link ini dan masukkan OTP untuk membuka blokir."\n\n— Analisis: domain tidak resmi, meminta OTP, nada mendesak. Pola phishing.',
+  'chat-rina.txt': 'Chat — Pengirim tidak dikenal, mengaku "IT Support":\n\n"Hai Rina, saya dari IT. Server error. Kirim password + OTP ya, hanya sebentar."\n\nRina belum membalas. Tidak ada tiket IT resmi untuk permintaan ini.',
+  'log.txt': '[2026-11-26 09:12] login gagal — rina.finance — 3x — password lemah terdeteksi\n[2026-11-26 09:14] akses dari IP tidak dikenal ke 192.168.10.5:8080\n[2026-11-26 09:15] port 8080 masih terbuka — tidak ada di daftar layanan resmi\n[2026-11-26 09:18] komentar internal mengandung tag script — belum di-escape',
+  'backup.txt': 'backup-2024.zip — isi simulasi:\n- users.csv (fiktif)\n- log.txt\n- FLAG{ANDARMAX_WHITE_HAT_2026}\n\nCatatan: backup lama tidak boleh berisi data sensitif. Ini temuan audit.'
+};
 document.getElementById('cmdInput').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   const raw=e.target.value.trim(), cmd=raw.toLowerCase(); e.target.value='';
   log('$ '+raw,'cmd');
-  if(cmd==='help') log('> help, whoami, ls, scan, find flag, fix sql, fix xss, fix port, certificate, share, clear');
-  else if(cmd==='whoami') log('> '+currentUser+' — ANDARMAX — lab lokal');
-  else if(cmd==='ls') log('> lab/  passwords.txt  phishing_samples/  flag.txt');
+  if(cmd==='help') log('> help, whoami, ls, scan, cat email-rina.txt, cat chat-rina.txt, cat log.txt, cat backup.txt, find flag, fix sql, fix xss, fix port, certificate, share, clear');
+  else if(cmd==='whoami') log('> '+currentUser+' — pentester — Kasus 01 — izin audit HR (fiktif)');
+  else if(cmd==='ls') log('> email-rina.txt  chat-rina.txt  log.txt  backup.txt  flag.txt');
   else if(cmd==='certificate'||cmd==='cert') openCert();
   else if(cmd==='share') openShare();
+  else if(cmd.startsWith('cat ')){
+    const f=cmd.slice(4).trim();
+    if(FILES[f]) log(FILES[f]);
+    else log('> File tidak ditemukan: '+f+' — ketik ls');
+  }
   else if(cmd==='scan'){
-    const ip='192.168.1.'+Math.floor(Math.random()*200+2);
-    log('> nmap -sV '+ip+' [LAB LOKAL — SIMULASI]'); log('> 22/tcp open ssh, 80/tcp open http, 443/tcp open https'); log('> 8080/tcp open — tidak diperlukan, sebaiknya ditutup.');
+    const ip='192.168.10.5';
+    log('> scan '+ip+' — nusantara-retail.test [SIMULASI]');
+    log('> 22/tcp open ssh — layanan resmi');
+    log('> 80/tcp open http — website internal');
+    log('> 443/tcp open https — website internal');
+    log('> 8080/tcp open — TIDAK ADA di daftar resmi. Harus ditutup.','warn');
+    log('> Jejak cocok dengan log.txt: akses mencurigakan ke port 8080.');
     if(!completed['m3']&&xp>=300){ completed['m3']=true; addXP(300,'Modul 03 selesai'); }
   }
-  else if(cmd==='find flag'||cmd==='findflag'){
-    log('> FLAG{ANDARMAX_WHITE_HAT_2026}','ok');
+  else if(cmd==='find flag'||cmd==='findflag'||cmd==='cat backup.txt'){
+    if(cmd==='cat backup.txt'){ log(FILES['backup.txt']); }
+    else log('> FLAG{ANDARMAX_WHITE_HAT_2026}','ok');
     if(!completed['m5']&&xp>=900){ completed['m5']=true; addXP(600,'Modul 05 selesai'); }
   }
   else if(cmd==='fix sql'||cmd==='fix xss'||cmd==='fix port'){
