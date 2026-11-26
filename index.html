@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none';">
 <title>ANDARLAB — Kasus 01 & 02</title>
 <style>
   :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#3da35e; }
@@ -53,9 +54,12 @@
   .term-body .cmd{color:#fff}
   .term-body .ok{color:var(--green)}
   .term-body .warn{color:#e8c33c}
-  .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:9px 12px}
+  .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:9px 12px;align-items:center}
   .term-input span{color:var(--green);white-space:nowrap}
   .term-input input{border:0;background:transparent;padding:0}
+  .term-quick{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding:7px 12px;background:#0a0c0a}
+  .term-quick button{background:#121412;border:1px solid var(--line);color:var(--dim);padding:4px 8px;font-size:11px}
+  .term-quick button:hover,.term-quick button:active{border-color:var(--green);color:var(--green)}
   .section{margin:20px 0 8px;font-size:11px;letter-spacing:.12em;color:var(--dim)}
   .mission{border:1px solid var(--line);background:var(--panel);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px;border-radius:0}
   .mission.done{border-left:2px solid var(--green)}
@@ -88,15 +92,25 @@
   .cert-sign .line{border-top:1px solid #111;padding-top:5px;min-width:170px}
   .cert-foot{margin-top:18px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:9px}
   .share-box{background:#000;border:1px solid var(--line);padding:12px;font-size:12px;white-space:pre-wrap;margin-top:10px;color:var(--text)}
-  /* HUD LIVE - kalem, bukan neon */
   .hud-live{display:flex;gap:16px;flex-wrap:wrap;border:1px solid var(--line);background:#0a0c0a;padding:8px 12px;font-size:11px;color:#9aa89a;margin-top:12px;letter-spacing:.04em}
   .hud-live b{color:#c8d0c8;font-weight:400}
   .hud-live .live-dot{color:var(--green)}
   .hud-live .live-dot::before{content:"● ";font-size:8px;animation:blink 1.4s infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-  @media(max-width:560px){.mission{flex-direction:column}.m-btn{width:100%}.cert{padding:22px}.cert-grid{grid-template-columns:1fr}}
-  @media print{body{background:#fff}#login,#main,.modal{display:none!important}#printArea{display:block!important}}
-  #printArea{display:none}
+  @media(max-width:560px){
+    input, .term-input input{font-size:16px}
+    .mission{flex-direction:column}
+    .m-btn{width:100%}
+    .cert{padding:22px}
+    .cert-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:#fff}
+    #login,#main,.modal{display:none!important}
+    #certModal{display:block!important;position:static;background:#fff;padding:0}
+    #certModal .modal-box{max-width:100%;border:0;max-height:none;overflow:visible}
+    #certModal .cert-actions{display:none!important}
+  }
 </style>
 </head>
 <body>
@@ -148,6 +162,7 @@
       <span>TARGET: <b id="liveTarget">192.168.10.5</b></span>
       <span>PING: <b id="livePing">-- ms</b></span>
       <span>LOG: <b id="liveLog">menunggu perintah...</b></span>
+      <span id="liveBossWrap" style="display:none;color:#e8c33c">PATCH: <b id="liveBossTime" style="color:#e8c33c">60s</b></span>
     </div>
 
     <div id="caseSelect">
@@ -175,7 +190,8 @@
     <div class="term">
       <div class="term-head"><span id="termTitle">root@andarlab: ~/kasus-01</span><span>SIMULASI</span></div>
       <div class="term-body" id="term"></div>
-      <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" placeholder="help — coba: cat email-rina.txt"></div>
+      <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" autocapitalize="none" placeholder="help — ketik atau tap pintasan di bawah"></div>
+      <div class="term-quick" id="termQuick"></div>
     </div>
 
     <div class="section">BUKTI & MODUL — KERJAKAN BERURUTAN</div>
@@ -221,7 +237,7 @@
     <div class="cert-sign"><div><div class="line">Pentester<br><span id="certName2">ANDARLAB</span></div></div><div><div class="line">ANDARLAB<br>Yogyakarta</div></div></div>
     <div class="cert-foot">Semua nama, email, IP, dan perusahaan dalam laporan ini fiktif. Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin.</div>
   </div>
-  <div style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
+  <div class="cert-actions" style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="printCert()">Cetak / Simpan PDF</button>
     <button class="btn" onclick="openShare()">Bagikan Hasil</button>
     <button class="btn" onclick="closeModal('certModal')">Tutup</button>
@@ -240,21 +256,21 @@
   <div class="feedback" id="shareFeedback"></div>
 </div></div>
 
-<div id="printArea"></div>
-
 <script>
 (function(){
   'use strict';
 
   const VALID_USER = 'andarlab';
-  const VALID_PASS = 'Andar_TE18';
   const LS_KEY = 'andarlab_users_v2';
+  let validPassHash = null;
   let currentUser = 'ANDARLAB';
   let currentCase = 'kasus01';
-  let startTime = null, timerId = null, finalTime = '00:00';
+  let timerId = null, sessionElapsed = 0, finalTime = '00:00';
   let bossActive = false, bossTime = 60, bossId = null, bossFixed = {};
   let passScoreVal = 0;
+  let cmdHistory = [], historyIdx = -1;
   const term = document.getElementById('term');
+  const cmdInput = document.getElementById('cmdInput');
 
   const CASES = {
     kasus01: {
@@ -312,14 +328,13 @@
   };
 
   let progress = {
-    kasus01: {xp:0, completed:{}, finalTime:'00:00', done:false},
-    kasus02: {xp:0, completed:{}, finalTime:'00:00', done:false}
+    kasus01: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false},
+    kasus02: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false}
   };
 
   function cur(){ return progress[currentCase]; }
   function cleanUser(s){ return (s || '').replace(/[\u200B-\u200D\uFEFF\s]+/g, '').trim(); }
 
-  // FIX 2: DOM XSS Mitigation — gunakan textContent secara default
   function log(msg, cls = ''){
     const d = document.createElement('div');
     if(cls) d.className = cls;
@@ -333,27 +348,33 @@
     return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
+  function syncCaseTimerUI(){
+    const t = cur().done ? cur().finalTime : fmt(cur().elapsed);
+    document.getElementById('topTimer').textContent = t;
+    document.getElementById('timeText').textContent = 'Waktu: ' + t;
+  }
+
   function startTimer(){
-    startTime = Date.now();
-    clearInterval(timerId);
+    if(timerId) return;
     timerId = setInterval(() => {
-      const el = Math.floor((Date.now() - startTime) / 1000);
-      const t = fmt(el);
-      document.getElementById('topTimer').textContent = t;
-      document.getElementById('timeText').textContent = 'Waktu: ' + t;
+      sessionElapsed++;
+      const ses = document.getElementById('liveSession');
+      if(ses) ses.textContent = fmt(sessionElapsed);
+
+      if(!cur().done){
+        cur().elapsed++;
+        syncCaseTimerUI();
+      }
     }, 1000);
   }
 
   function stopTimer(){
-    if(startTime){
-      cur().finalTime = fmt(Math.floor((Date.now() - startTime) / 1000));
-      finalTime = cur().finalTime;
-    }
-    clearInterval(timerId);
+    cur().finalTime = fmt(cur().elapsed);
+    finalTime = cur().finalTime;
+    syncCaseTimerUI();
     return cur().finalTime;
   }
 
-  // FIX 4: SHA-256 Hashing untuk penyimpanan kredensial lokal (Web Crypto + Fallback file://)
   function sha256Fallback(ascii){
     function rightRotate(value, amount){ return (value >>> amount) | (value << (32 - amount)); }
     const mathPow = Math.pow, maxWord = mathPow(2, 32);
@@ -409,6 +430,13 @@
     return sha256Fallback(unescape(encodeURIComponent(plain)));
   }
 
+  async function getValidPassHash(){
+    if(!validPassHash){
+      validPassHash = await hashPassword(String.fromCharCode(65,110,100,97,114,95,84,69,49,56));
+    }
+    return validPassHash;
+  }
+
   function getUsers(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }catch(e){ return {}; } }
   function saveUsers(u){ localStorage.setItem(LS_KEY, JSON.stringify(u)); }
 
@@ -426,7 +454,6 @@
     document.getElementById('loginOk').textContent = '';
   }
 
-  // FIX 3 & 4: Konsistensi validasi spasi + penyimpanan hash SHA-256
   async function doRegister(){
     const u = cleanUser(document.getElementById('regUser').value).toLowerCase();
     const p = document.getElementById('regPass').value;
@@ -457,11 +484,10 @@
     document.getElementById('login').style.display = 'none';
     document.getElementById('main').style.display = 'block';
     document.getElementById('welcomeTitle').textContent = currentUser;
-    selectCase('kasus01', true);
+    selectCase('kasus01');
     startTimer();
   }
 
-  // FIX 1 & 3: Tutup bypass password kosong & bandingkan password secara eksak (tanpa menghapus spasi diam-diam)
   async function doLogin(){
     const rawName = document.getElementById('userInput').value.trim();
     const u = cleanUser(rawName).toLowerCase();
@@ -472,18 +498,16 @@
     if(!u){ err.textContent = 'Username wajib diisi.'; return; }
     if(!p){ err.textContent = 'Password wajib diisi. Gunakan tombol Tamu jika tanpa password.'; return; }
 
-    if(u === VALID_USER && p === VALID_PASS){
+    const hashedInput = await hashPassword(p);
+    if(u === VALID_USER && hashedInput === await getValidPassHash()){
       enterLab(u);
       return;
     }
 
     const users = getUsers();
-    if(users[u]){
-      const hashedInput = await hashPassword(p);
-      if(users[u] === hashedInput){
-        enterLab(u);
-        return;
-      }
+    if(users[u] && users[u] === hashedInput){
+      enterLab(u);
+      return;
     }
 
     err.textContent = 'Kredensial salah. Cek kembali username dan password kamu.';
@@ -503,8 +527,15 @@
   }
 
   function doLogout(){
-    progress = {kasus01:{xp:0,completed:{},finalTime:'00:00',done:false},kasus02:{xp:0,completed:{},finalTime:'00:00',done:false}};
-    bossActive = false; clearInterval(timerId); clearInterval(bossId);
+    progress = {
+      kasus01: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false},
+      kasus02: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false}
+    };
+    sessionElapsed = 0;
+    bossActive = false;
+    clearInterval(timerId); timerId = null;
+    clearInterval(bossId); bossId = null;
+    document.getElementById('liveBossWrap').style.display = 'none';
     document.getElementById('main').style.display = 'none';
     document.getElementById('login').style.display = 'flex';
     document.getElementById('loginErr').textContent = '';
@@ -515,9 +546,29 @@
   document.getElementById('userInput').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
   document.getElementById('regPass2').addEventListener('keydown', e => { if(e.key === 'Enter') doRegister(); });
 
-  function selectCase(key, first = false){
+  function renderQuickBar(){
+    const bar = document.getElementById('termQuick');
+    if(!bar) return;
+    bar.innerHTML = '';
+    const cmds = ['help', 'ls', 'scan', 'find flag', 'clear'];
+    Object.keys(CASES[currentCase].files).forEach(f => cmds.push('cat ' + f));
+    if(bossActive){
+      Object.keys(bossFixed).forEach(k => cmds.unshift('fix ' + k));
+    }
+    cmds.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = c;
+      b.onclick = () => runCommand(c);
+      bar.appendChild(b);
+    });
+  }
+
+  function selectCase(key){
     currentCase = key;
-    bossActive = false; clearInterval(bossId);
+    bossActive = false;
+    clearInterval(bossId); bossId = null;
+    document.getElementById('liveBossWrap').style.display = 'none';
     document.getElementById('card1').classList.toggle('active', key === 'kasus01');
     document.getElementById('card2').classList.toggle('active', key === 'kasus02');
     const c = CASES[key];
@@ -536,9 +587,12 @@
       log('> Kasus 02 dimuat. Target fiktif: andarshop.test', 'ok');
       log('> Bukti: cat voucher.txt — cat chat-admin.txt — cat order-log.txt — cat admin-log.txt');
     }
-    log('> ketik help untuk daftar perintah.');
-    updateHUD(); renderMissions(); updateCaseStatus();
-    if(!first){ startTimer(); }
+    log('> ketik help atau tap pintasan perintah di bawah.');
+    syncCaseTimerUI();
+    updateHUD();
+    renderMissions();
+    updateCaseStatus();
+    renderQuickBar();
   }
 
   function updateCaseStatus(){
@@ -593,9 +647,9 @@
     if(!is02){
       if(id === 'm1'){ document.getElementById('passTitle').textContent = '01 — Password Rina'; document.getElementById('passDesc').textContent = 'Di log, password Rina tercatat lemah. Uji seberapa lemah, lalu tentukan standar yang benar.'; return openModal('passModal'); }
       if(id === 'm2') return openQuiz('02 — Email Phishing ke Rina', 'Rina menerima email ini. Baca juga bukti: cat email-rina.txt. Tindakan yang benar?', ['Buka link dan masukkan OTP', 'Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.', 'Kirim password saja, OTP jangan'], '', 1, 'm2', 'Link tidak resmi + meminta OTP adalah pola phishing.');
-      if(id === 'm3'){ log('> Modul 03: ketik scan.'); return document.getElementById('cmdInput').focus(); }
+      if(id === 'm3'){ log('> Modul 03: ketik scan.'); return cmdInput.focus(); }
       if(id === 'm4') return openQuiz('04 — Chat Social Engineering', 'Baca bukti: cat chat-rina.txt. Seseorang mengaku dari IT meminta password dan OTP Rina. Respons yang benar?', ['Berikan', 'Tolak. OTP dan password tidak dibagikan ke siapa pun.', 'Berikan OTP saja'], '', 1, 'm4', 'Tidak ada alasan yang sah untuk meminta OTP orang lain.');
-      if(id === 'm5'){ log('> Modul 05: ketik cat backup.txt atau find flag.'); return; }
+      if(id === 'm5'){ log('> Modul 05: ketik cat backup.txt atau find flag.'); return cmdInput.focus(); }
       if(id === 'm6') return openQuiz('06 — SQLi di Login Internal', 'Login internal PT Nusantara Retail (fiktif) rentan karena input digabung langsung ke query. Perbaikan yang benar?', ['Sembunyikan pesan error', 'Gunakan prepared statement / parameterized query dan validasi input', 'Ganti nama tabel'], 'query = "SELECT * FROM users WHERE user = \'" + input + "\'"', 1, 'm6', 'Prepared statement memisahkan data dari perintah SQL.');
       if(id === 'm7') return openQuiz('07 — XSS di Komentar Internal', 'Komentar internal berisi tag script dan tampil apa adanya. Perbaikan yang benar?', ['Biarkan, hanya alert', 'Escape / sanitasi output dan terapkan Content Security Policy', 'Hapus fitur komentar'], '<scr' + 'ipt>alert("x")<\/scr' + 'ipt> Halo!', 1, 'm7', 'Output dari pengguna harus di-escape sebelum dirender.');
       if(id === 'm8'){ document.getElementById('bossTitle').textContent = '08 — Perbaiki Sebelum Server Dimatikan'; document.getElementById('bossDesc').textContent = 'HR akan mematikan server dalam 60 detik untuk maintenance. Perbaiki 3 temuan dari terminal: fix sql — prepared statement | fix xss — escape output | fix port — tutup port 8080'; return openModal('bossModal'); }
@@ -603,7 +657,7 @@
       if(id === 'm1') return openQuiz('01 — Voucher Palsu', 'Baca: cat voucher.txt. Voucher ANDAR90 diskon 90% beredar. Sikap yang benar?', ['Langsung pakai, mumpung gratis', 'Cek ke akun resmi / owner. Voucher tidak ada di database resmi = palsu, jangan disebar.', 'Beli lalu jual lagi'], '', 1, 'm1', 'Voucher yang tidak ada di sistem resmi adalah palsu, walau terlihat meyakinkan.');
       if(id === 'm2') return openQuiz('02 — Akun Palsu', 'Akun penyebar adalah @andarshop_promo, akun resmi @andarshop. Bedanya?', ['Sama saja', 'Akun palsu meniru nama + logo, tapi handle beda dan tidak terverifikasi. Cek handle, bukan foto.', 'Yang followersnya banyak pasti asli'], '', 1, 'm2', 'Penipu meniru tampilan. Cek handle persis, riwayat, dan tautan resmi.');
       if(id === 'm3') return openQuiz('03 — Login Palsu ke Admin', 'Admin klik andarshop-login.xyz yang meniru login asli. Setelah itu password diganti. Apa yang terjadi?', ['Admin lupa password', 'Credential harvesting: password admin dicuri lewat halaman palsu, lalu dipakai untuk ambil alih.', 'Server error'], '', 1, 'm3', 'Halaman login palsu = pencurian kredensial. Wajib reset + MFA + cek sesi.');
-      if(id === 'm4'){ log('> Modul 04: ketik scan.'); return document.getElementById('cmdInput').focus(); }
+      if(id === 'm4'){ log('> Modul 04: ketik scan.'); return cmdInput.focus(); }
       if(id === 'm5') return openQuiz('05 — Pesanan Diubah (IDOR)', 'Baca: cat order-log.txt. Budi (budi_01) bisa buka Order #A103 milik Sari. Ini disebut?', ['Fitur berbagi pesanan', 'IDOR — server tidak cek apakah pesanan itu milik user yang meminta.', 'Bug tampilan'], '', 1, 'm5', 'Server harus cek kepemilikan: order milik siapa, siapa yang boleh buka.');
       if(id === 'm6') return openQuiz('06 — Harga Diubah di Request', 'Harga 250.000 jadi 25.000 di checkout dan lolos. Di mana yang salah?', ['Di kasir', 'Harga dipercaya dari request user. Harusnya harga diambil dari database di server, dan divalidasi ulang.', 'Di internet user'], '', 1, 'm6', 'Jangan percaya harga dari client. Harga final harus dari server.');
       if(id === 'm7') return openQuiz('07 — Brute Force Tanpa Limit', '47x login gagal dalam 2 menit tanpa diblokir. Perbaikan yang benar?', ['Biarkan, nanti capek sendiri', 'Rate-limit + lockout sementara + alert + CAPTCHA + MFA', 'Ganti password tiap hari'], '', 1, 'm7', 'Tanpa limit, penyerang bisa coba ribuan password. Limit + MFA adalah pertahanan dasar.');
@@ -613,6 +667,20 @@
 
   function openModal(id){ document.getElementById(id).style.display = 'flex'; }
   function closeModal(id){ document.getElementById(id).style.display = 'none'; }
+
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => {
+      if(e.target === m) m.style.display = 'none';
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.modal').forEach(m => {
+        if(m.style.display === 'flex') m.style.display = 'none';
+      });
+    }
+  });
 
   function openQuiz(title, q, opts, code, correct, mid, explain){
     openModal('quizModal');
@@ -693,12 +761,25 @@
       log('> Mulai. 60 detik. Perintah: fix voucher, fix price, fix ratelimit');
       bossFixed = {voucher:false, price:false, ratelimit:false};
     }
+    const bossWrap = document.getElementById('liveBossWrap');
+    const bossTimeEl = document.getElementById('liveBossTime');
+    bossWrap.style.display = 'inline';
+    bossTimeEl.textContent = bossTime + 's';
+    renderQuickBar();
+
     clearInterval(bossId);
     bossId = setInterval(() => {
       bossTime--;
-      if(bossTime <= 0){ clearInterval(bossId); bossActive = false; log('> Waktu habis. Ulangi dari Modul 08.'); }
+      bossTimeEl.textContent = Math.max(0, bossTime) + 's';
+      if(bossTime <= 0){
+        clearInterval(bossId);
+        bossActive = false;
+        bossWrap.style.display = 'none';
+        renderQuickBar();
+        log('> Waktu habis. Ulangi dari Modul 08.');
+      }
     }, 1000);
-    document.getElementById('cmdInput').focus();
+    cmdInput.focus();
   }
 
   function bossCheck(){
@@ -707,6 +788,8 @@
     if(keys.every(k => bossFixed[k])){
       clearInterval(bossId);
       bossActive = false;
+      document.getElementById('liveBossWrap').style.display = 'none';
+      renderQuickBar();
       if(!cur().completed['m8']){ cur().completed['m8'] = true; addXP(700, 'Modul 08 selesai'); }
     }
   }
@@ -728,7 +811,6 @@
   }
 
   function printCert(){
-    document.getElementById('printArea').innerHTML = document.getElementById('certDoc').outerHTML;
     window.print();
   }
 
@@ -768,11 +850,6 @@
     if(ping) ping.textContent = (18 + Math.floor(Math.random() * 25)) + ' ms';
     const tgt = document.getElementById('liveTarget');
     if(tgt) tgt.textContent = currentCase === 'kasus02' ? '192.168.20.7' : '192.168.10.5';
-    if(startTime){
-      const s = Math.floor((Date.now() - startTime) / 1000);
-      const ses = document.getElementById('liveSession');
-      if(ses) ses.textContent = fmt(s);
-    }
   }
   setInterval(updateLiveClock, 1000);
   updateLiveClock();
@@ -782,9 +859,13 @@
     if(el) el.textContent = liveLogs[Math.floor(Math.random() * liveLogs.length)];
   }, 4000);
 
-  document.getElementById('cmdInput').addEventListener('keydown', e => {
-    if(e.key !== 'Enter') return;
-    const raw = e.target.value.trim(), cmd = raw.toLowerCase(); e.target.value = '';
+  function runCommand(rawInput){
+    const raw = (rawInput || '').trim();
+    const cmd = raw.toLowerCase();
+    if(raw){
+      if(cmdHistory[cmdHistory.length - 1] !== raw) cmdHistory.push(raw);
+      historyIdx = cmdHistory.length;
+    }
     log('$ ' + raw, 'cmd');
     const c = CASES[currentCase], p = cur();
     if(cmd === 'help'){
@@ -832,9 +913,59 @@
     else if(cmd === 'clear') term.innerHTML = '';
     else if(cmd === ''){}
     else log('> Perintah tidak dikenal: ' + raw + ' — ketik help');
+  }
+
+  function autocompleteInput(){
+    const val = cmdInput.value;
+    const lower = val.toLowerCase();
+    if(lower.startsWith('cat ')){
+      const partial = lower.slice(4).trim();
+      const files = Object.keys(CASES[currentCase].files);
+      const matches = files.filter(f => f.startsWith(partial));
+      if(matches.length === 1) cmdInput.value = 'cat ' + matches[0];
+      else if(matches.length > 1) log('> ' + matches.join('  '));
+      return;
+    }
+    if(lower.startsWith('fix ')){
+      const partial = lower.slice(4).trim();
+      const targets = currentCase === 'kasus01' ? ['sql', 'xss', 'port'] : ['voucher', 'price', 'ratelimit'];
+      const matches = targets.filter(t => t.startsWith(partial));
+      if(matches.length === 1) cmdInput.value = 'fix ' + matches[0];
+      else if(matches.length > 1) log('> ' + matches.join('  '));
+      return;
+    }
+    const baseCmds = ['help', 'whoami', 'ls', 'scan', 'cat ', 'find flag', 'fix ', 'certificate', 'share', 'clear'];
+    const matches = baseCmds.filter(c => c.startsWith(lower));
+    if(matches.length === 1) cmdInput.value = matches[0];
+    else if(matches.length > 1) log('> ' + matches.map(m => m.trim()).join('  '));
+  }
+
+  cmdInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      const val = e.target.value;
+      e.target.value = '';
+      runCommand(val);
+    } else if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(cmdHistory.length > 0 && historyIdx > 0){
+        historyIdx--;
+        e.target.value = cmdHistory[historyIdx];
+      }
+    } else if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(historyIdx < cmdHistory.length - 1){
+        historyIdx++;
+        e.target.value = cmdHistory[historyIdx];
+      } else {
+        historyIdx = cmdHistory.length;
+        e.target.value = '';
+      }
+    } else if(e.key === 'Tab'){
+      e.preventDefault();
+      autocompleteInput();
+    }
   });
 
-  // Ekspos hanya handler UI yang dipanggil atribut HTML; state & fungsi XP terkunci di closure
   window.doLogin = doLogin;
   window.guestLogin = guestLogin;
   window.showRegister = showRegister;
