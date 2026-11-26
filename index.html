@@ -12,7 +12,6 @@
   input{width:100%;background:#000;border:1px solid var(--line);color:#fff;padding:10px 11px;outline:none}
   input:focus{border-color:var(--green)}
   button{cursor:pointer}
-  /* login */
   #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#000}
   .login-box{width:100%;max-width:360px;border:1px solid var(--line);background:var(--panel);padding:24px}
   .login-box h1{font-size:15px;color:#fff;letter-spacing:.08em}
@@ -20,9 +19,9 @@
   .login-box .meta{font-size:12px;color:var(--dim);margin:8px 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
   label{font-size:11px;color:var(--dim);letter-spacing:.08em;display:block;margin:12px 0 5px}
   .btn-primary{width:100%;margin-top:16px;background:var(--green);color:#000;border:0;padding:11px;font-weight:700}
+  .btn-ghost{width:100%;margin-top:8px;background:transparent;border:1px solid var(--line);color:var(--text);padding:11px}
   .err{color:#ff5c5c;font-size:12px;min-height:16px;margin-top:10px}
   .hint{margin-top:14px;font-size:12px;color:var(--dim)}
-  /* main */
   .topbar{border-bottom:1px solid var(--line);padding:11px 16px;display:flex;justify-content:space-between;color:#fff;font-size:12px;letter-spacing:.06em}
   .topbar span{color:var(--green)}
   .wrap{max-width:720px;margin:0 auto;padding:18px 14px 40px}
@@ -34,7 +33,6 @@
   .meta-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px}
   .cert-line{display:none;margin-top:12px;border:1px solid var(--line);padding:11px 12px;font-size:12px}
   .cert-line button{background:transparent;border:1px solid var(--green);color:var(--green);padding:6px 10px;margin-left:10px}
-  /* terminal */
   .term{margin-top:14px;border:1px solid var(--line);background:#080a08}
   .term-head{padding:9px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--dim);display:flex;justify-content:space-between}
   .term-body{padding:12px;min-height:170px;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
@@ -43,7 +41,6 @@
   .term-input{display:flex;gap:8px;border-top:1px solid var(--line);padding:9px 12px}
   .term-input span{color:var(--green);white-space:nowrap}
   .term-input input{border:0;background:transparent;padding:0}
-  /* modul */
   .section{margin:20px 0 8px;font-size:11px;letter-spacing:.12em;color:var(--dim)}
   .mission{border:1px solid var(--line);background:var(--panel);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
   .mission.done{border-left:2px solid var(--green)}
@@ -64,7 +61,6 @@
   .btn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
   .feedback{margin-top:11px;font-size:12px;min-height:16px}
   .footer{margin-top:24px;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:11px}
-  /* sertifikat */
   .cert{width:100%;max-width:680px;background:#fff;color:#111;padding:32px 36px;text-align:left}
   .cert-top{display:flex;justify-content:space-between;border-bottom:1px solid #111;padding-bottom:12px;font-size:12px}
   .cert h2{font-size:26px;margin:24px 0 4px;color:#000}
@@ -76,6 +72,7 @@
   .cert-sign{display:flex;justify-content:space-between;margin-top:24px;font-size:12px}
   .cert-sign .line{border-top:1px solid #111;padding-top:5px;min-width:170px}
   .cert-foot{margin-top:18px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:9px}
+  .share-box{background:#000;border:1px solid var(--line);padding:12px;font-size:12px;white-space:pre-wrap;margin-top:10px;color:var(--text)}
   @media(max-width:560px){.mission{flex-direction:column}.m-btn{width:100%}.cert{padding:22px}.cert-grid{grid-template-columns:1fr}}
   @media print{body{background:#fff}#login,#main,.modal{display:none!important}#printArea{display:block!important}}
   #printArea{display:none}
@@ -87,27 +84,28 @@
   <div class="login-box">
     <h1>ANDARMAX <span>ACADEMY</span></h1>
     <div class="meta">Lab simulasi. Ethical hacking / white hat.</div>
-    <label>USERNAME</label>
-    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none">
-    <label>PASSWORD</label>
-    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none">
+    <label>NAMA / USERNAME</label>
+    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none" placeholder="contoh: bro">
+    <label>PASSWORD <span style="color:var(--dim)">— KOSONGKAN UNTUK MODE TAMU</span></label>
+    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none" placeholder="kosongkan untuk tamu">
     <button class="btn-primary" onclick="doLogin()">Masuk</button>
+    <button class="btn-ghost" onclick="guestLogin()">Main Sebagai Tamu</button>
     <div class="err" id="loginErr"></div>
-    <div class="hint">Lab: bro / Andar_TE18</div>
+    <div class="hint">Lab: bro / Andar_TE18<br>Tamu: isi nama saja, password dikosongkan.</div>
   </div>
 </div>
 
 <div id="main" style="display:none">
-  <div class="topbar"><div>ANDARMAX <span>ACADEMY</span></div><div id="topRank">NEWBIE</div></div>
+  <div class="topbar"><div>ANDARMAX <span>ACADEMY</span></div><div><span id="topRank">NEWBIE</span> • <span id="topTimer">00:00</span></div></div>
   <div class="wrap">
     <div class="head">
       <h2 id="welcomeTitle">BRO</h2>
       <p>8 modul. Password, phishing, jaringan, social engineering, SQLi, XSS, respons insiden.</p>
       <div class="progress"><i id="xpFill"></i></div>
-      <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span></div>
+      <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span><span id="timeText">Waktu: 00:00</span></div>
     </div>
 
-    <div id="certBanner" class="cert-line">Sertifikat tersedia. 8/8 modul selesai.<button onclick="openCert()">Lihat</button></div>
+    <div id="certBanner" class="cert-line">Sertifikat tersedia. 8/8 modul selesai.<button onclick="openCert()">Lihat</button><button onclick="openShare()">Bagikan</button></div>
 
     <div class="term">
       <div class="term-head"><span>root@andarmax: ~/lab</span><span>SIMULASI</span></div>
@@ -154,15 +152,28 @@
       <div><span>NOMOR</span><b id="certId">AMA-2026-0000</b></div>
       <div><span>TANGGAL</span><b id="certDate">—</b></div>
       <div><span>RANK</span><b>MASTER WHITE HAT</b></div>
-      <div><span>KETERANGAN</span><b>Lab lokal — bukan sertifikasi industri</b></div>
+      <div><span>WAKTU PENYELESAIAN</span><b id="certTime">—</b></div>
     </div>
     <div class="cert-sign"><div><div class="line">Peserta<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
     <div class="cert-foot">Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin. Ethical hacking yang sah membutuhkan izin tertulis dari pemilik sistem.</div>
   </div>
   <div style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" onclick="printCert()">Cetak / Simpan PDF</button>
+    <button class="btn" onclick="openShare()">Bagikan Hasil</button>
     <button class="btn" onclick="closeModal('certModal')">Tutup</button>
   </div>
+</div></div>
+
+<div class="modal" id="shareModal"><div class="modal-box">
+  <h3>Bagikan Hasil</h3>
+  <p>Salin teks ini ke WA / IG Story. Ini yang bikin temanmu penasaran dan ikut main.</p>
+  <div class="share-box" id="shareText"></div>
+  <div class="row">
+    <button class="btn primary" onclick="copyShare()">Salin Teks</button>
+    <button class="btn" onclick="shareWA()">Buka WhatsApp</button>
+    <button class="btn" onclick="closeModal('shareModal')">Tutup</button>
+  </div>
+  <div class="feedback" id="shareFeedback"></div>
 </div></div>
 
 <div id="printArea"></div>
@@ -170,19 +181,32 @@
 <script>
 const VALID_USER='bro', VALID_PASS='Andar_TE18';
 let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={sql:false,xss:false,port:false}, currentUser='BRO';
+let startTime=null, timerId=null, finalTime='00:00';
 const term=document.getElementById('term');
 function clean(s){ return (s||'').replace(/[\u200B-\u200D\uFEFF\s]+/g,'').trim(); }
 function log(msg, cls=''){ const d=document.createElement('div'); if(cls) d.className=cls; d.innerHTML=msg; term.appendChild(d); term.scrollTop=term.scrollHeight; }
+function fmt(sec){ const m=Math.floor(sec/60), s=sec%60; return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
+function startTimer(){ startTime=Date.now(); clearInterval(timerId); timerId=setInterval(()=>{ const el=Math.floor((Date.now()-startTime)/1000); const t=fmt(el); document.getElementById('topTimer').textContent=t; document.getElementById('timeText').textContent='Waktu: '+t; },1000); }
+function stopTimer(){ if(startTime){ finalTime=fmt(Math.floor((Date.now()-startTime)/1000)); } clearInterval(timerId); return finalTime; }
+function enterLab(name){
+  currentUser=name.toUpperCase();
+  document.getElementById('login').style.display='none';
+  document.getElementById('main').style.display='block';
+  document.getElementById('welcomeTitle').textContent=currentUser;
+  term.innerHTML=''; log('> lab dimuat. ketik help.','ok'); renderMissions(); startTimer();
+}
 function doLogin(){
-  const u=clean(document.getElementById('userInput').value).toLowerCase();
+  const rawName=document.getElementById('userInput').value.trim();
+  const u=clean(rawName).toLowerCase();
   const p=clean(document.getElementById('passInput').value);
-  if(u===VALID_USER && p===VALID_PASS){
-    currentUser=u.toUpperCase();
-    document.getElementById('login').style.display='none';
-    document.getElementById('main').style.display='block';
-    document.getElementById('welcomeTitle').textContent=currentUser;
-    term.innerHTML=''; log('> lab dimuat. ketik help.','ok'); renderMissions();
-  } else document.getElementById('loginErr').textContent='Kredensial salah. Cek: bro / Andar_TE18';
+  if(u===VALID_USER && p===VALID_PASS){ enterLab(u); return; }
+  if(p==='' && u!==''){ enterLab(u); return; }
+  document.getElementById('loginErr').textContent='Kredensial salah. Lab: bro / Andar_TE18. Tamu: isi nama, kosongkan password.';
+}
+function guestLogin(){
+  const n=document.getElementById('userInput').value.trim();
+  if(!n){ document.getElementById('loginErr').textContent='Isi nama dulu untuk mode tamu.'; return; }
+  enterLab(n);
 }
 document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('userInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
@@ -193,7 +217,7 @@ function addXP(n,label){
   document.getElementById('topRank').textContent= level>=4?'MASTER WHITE HAT':level>=3?'ETHICAL HACKER':level>=2?'JUNIOR PENTESTER':'NEWBIE';
   document.getElementById('doneText').textContent=Object.keys(completed).length+' / 8 selesai';
   if(label) log('> +'+n+' XP — '+label,'ok');
-  if(xp>=3000 && Object.keys(completed).length>=8){ document.getElementById('certBanner').style.display='block'; log('> 8/8 selesai. ketik: certificate','ok'); }
+  if(xp>=3000 && Object.keys(completed).length>=8){ stopTimer(); document.getElementById('certBanner').style.display='block'; log('> 8/8 selesai. Waktu: '+finalTime+'. ketik: certificate atau share','ok'); }
   renderMissions();
 }
 const missions=[
@@ -267,25 +291,48 @@ function bossCheck(){
 }
 function openCert(){
   if(Object.keys(completed).length<8){ log('> Sertifikat terkunci. Selesaikan 8/8 modul.'); return; }
+  stopTimer();
   const d=new Date(); const id='AMA-2026-'+String(Math.floor(1000+Math.random()*9000));
   document.getElementById('certName').textContent=currentUser;
   document.getElementById('certName2').textContent=currentUser;
   document.getElementById('certId').textContent=id;
   document.getElementById('certDate').textContent=d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('certTime').textContent=finalTime;
   openModal('certModal');
 }
 function printCert(){
   document.getElementById('printArea').innerHTML=document.getElementById('certDoc').outerHTML;
   window.print();
 }
+function getShareText(){
+  const t = Object.keys(completed).length>=8 ? finalTime : 'belum selesai';
+  const link = location.href;
+  return 'ANDARMAX ACADEMY — Lab Selesai\n' + currentUser + ' — MASTER WHITE HAT\n8/8 modul • 3000 XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + link;
+}
+function openShare(){
+  closeModal('certModal');
+  document.getElementById('shareText').textContent=getShareText();
+  document.getElementById('shareFeedback').textContent='';
+  openModal('shareModal');
+}
+function copyShare(){
+  const txt=getShareText();
+  if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ document.getElementById('shareFeedback').textContent='Tersalin. Tempel ke WA / IG.'; document.getElementById('shareFeedback').style.color='var(--green)'; }); }
+  else { document.getElementById('shareFeedback').textContent='Salin manual teks di atas.'; }
+}
+function shareWA(){
+  const url='https://wa.me/?text='+encodeURIComponent(getShareText());
+  window.open(url,'_blank');
+}
 document.getElementById('cmdInput').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   const raw=e.target.value.trim(), cmd=raw.toLowerCase(); e.target.value='';
   log('$ '+raw,'cmd');
-  if(cmd==='help') log('> help, whoami, ls, scan, find flag, fix sql, fix xss, fix port, certificate, clear');
-  else if(cmd==='whoami') log('> root — ANDARMAX — lab lokal');
+  if(cmd==='help') log('> help, whoami, ls, scan, find flag, fix sql, fix xss, fix port, certificate, share, clear');
+  else if(cmd==='whoami') log('> '+currentUser+' — ANDARMAX — lab lokal');
   else if(cmd==='ls') log('> lab/  passwords.txt  phishing_samples/  flag.txt');
   else if(cmd==='certificate'||cmd==='cert') openCert();
+  else if(cmd==='share') openShare();
   else if(cmd==='scan'){
     const ip='192.168.1.'+Math.floor(Math.random()*200+2);
     log('> nmap -sV '+ip+' [LAB LOKAL — SIMULASI]'); log('> 22/tcp open ssh, 80/tcp open http, 443/tcp open https'); log('> 8080/tcp open — tidak diperlukan, sebaiknya ditutup.');
