@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ANDARMAX ACADEMY — Khasus 01</title>
+<title>ANDARLAB — Kasus 01</title>
 <style>
   :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#2fbf5a; }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -21,7 +21,10 @@
   .btn-primary{width:100%;margin-top:16px;background:var(--green);color:#000;border:0;padding:11px;font-weight:700}
   .btn-ghost{width:100%;margin-top:8px;background:transparent;border:1px solid var(--line);color:var(--text);padding:11px}
   .err{color:#ff5c5c;font-size:12px;min-height:16px;margin-top:10px}
+  .ok{color:var(--green);font-size:12px;min-height:16px;margin-top:10px}
   .hint{margin-top:14px;font-size:12px;color:var(--dim)}
+  .switch{margin-top:12px;text-align:center;font-size:12px;color:var(--dim)}
+  .switch button{background:none;border:0;color:var(--green);text-decoration:underline;cursor:pointer;font-size:12px}
   .topbar{border-bottom:1px solid var(--line);padding:11px 16px;display:flex;justify-content:space-between;color:#fff;font-size:12px;letter-spacing:.06em}
   .topbar span{color:var(--green)}
   .wrap{max-width:720px;margin:0 auto;padding:18px 14px 40px}
@@ -89,24 +92,44 @@
 
 <div id="login">
   <div class="login-box">
-    <h1>ANDARMAX <span>ACADEMY</span></h1>
+    <h1>ANDARLAB</h1>
     <div class="meta">Kasus 01 — PT Nusantara Retail (Fiktif)<br>Lab simulasi. Audit atas izin, dalam cerita game.</div>
-    <label>NAMA / USERNAME</label>
-    <input id="userInput" value="bro" autocomplete="off" autocapitalize="none">
-    <label>PASSWORD — KOSONGKAN UNTUK TAMU</label>
-    <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none">
-    <button class="btn-primary" onclick="doLogin()">Masuk</button>
-    <button class="btn-ghost" onclick="guestLogin()">Main Sebagai Tamu</button>
+
+    <!-- FORM MASUK -->
+    <div id="formLogin">
+      <label>USERNAME</label>
+      <input id="userInput" value="andarlab" autocomplete="off" autocapitalize="none" placeholder="username kamu">
+      <label>PASSWORD</label>
+      <input id="passInput" type="password" value="Andar_TE18" autocomplete="off" autocapitalize="none" placeholder="password kamu">
+      <button class="btn-primary" onclick="doLogin()">Masuk</button>
+      <button class="btn-ghost" onclick="guestLogin()">Main Sebagai Tamu</button>
+      <div class="switch">Belum punya akun? <button onclick="showRegister()">Buat Akun</button></div>
+      <div class="hint">Akun lab: andarlab / Andar_TE18<br>Akun kamu: yang kamu buat sendiri, tersimpan di perangkat ini.</div>
+    </div>
+
+    <!-- FORM DAFTAR -->
+    <div id="formRegister" style="display:none">
+      <label>BUAT USERNAME</label>
+      <input id="regUser" autocomplete="off" autocapitalize="none" placeholder="contoh: rizky_01">
+      <label>BUAT PASSWORD</label>
+      <input id="regPass" type="password" autocomplete="off" placeholder="min. 6 karakter">
+      <label>ULANGI PASSWORD</label>
+      <input id="regPass2" type="password" autocomplete="off" placeholder="ulangi password">
+      <button class="btn-primary" onclick="doRegister()">Buat Akun</button>
+      <button class="btn-ghost" onclick="showLogin()">Kembali ke Masuk</button>
+      <div class="hint">Akun disimpan lokal di perangkat ini. Tidak dikirim ke server. Kalau ganti HP / hapus data browser, akun hilang — buat lagi saja.</div>
+    </div>
+
     <div class="err" id="loginErr"></div>
-    <div class="hint">Lab: bro / Andar_TE18<br>Tamu: isi nama saja, kosongkan password.</div>
+    <div class="ok" id="loginOk"></div>
   </div>
 </div>
 
 <div id="main" style="display:none">
-  <div class="topbar"><div>ANDARMAX <span>ACADEMY</span></div><div><span id="topRank">NEWBIE</span> • <span id="topTimer">00:00</span></div></div>
+  <div class="topbar"><div>ANDARLAB</div><div><span id="topRank">NEWBIE</span> • <span id="topTimer">00:00</span> • <button onclick="doLogout()" style="background:none;border:0;color:#8a8f8a;text-decoration:underline;font-size:12px">Keluar</button></div></div>
   <div class="wrap">
     <div class="head">
-      <h2 id="welcomeTitle">BRO</h2>
+      <h2 id="welcomeTitle">ANDARLAB</h2>
       <p>Kasus 01. Audit PT Nusantara Retail. Kumpulkan bukti, perbaiki 3 temuan, tulis laporan.</p>
       <div class="progress"><i id="xpFill"></i></div>
       <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span><span id="timeText">Waktu: 00:00</span></div>
@@ -124,14 +147,14 @@
     <div id="certBanner" class="cert-line">Audit selesai. Laporan tersedia.<button onclick="openCert()">Laporan + Sertifikat</button><button onclick="openShare()">Bagikan</button></div>
 
     <div class="term">
-      <div class="term-head"><span>root@andarmax: ~/kasus-01</span><span>SIMULASI</span></div>
+      <div class="term-head"><span>root@andarlab: ~/kasus-01</span><span>SIMULASI</span></div>
       <div class="term-body" id="term"></div>
       <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" placeholder="help — coba: cat email-rina.txt"></div>
     </div>
 
     <div class="section">BUKTI & MODUL — KERJAKAN BERURUTAN</div>
     <div id="missions"></div>
-    <div class="footer">ANDARMAX ACADEMY — Semua nama, email, IP, dan perusahaan dalam kasus ini fiktif. Simulasi untuk belajar pertahanan.</div>
+    <div class="footer">ANDARLAB — Semua nama, email, IP, dan perusahaan dalam kasus ini fiktif. Simulasi untuk belajar pertahanan.</div>
   </div>
 </div>
 
@@ -159,18 +182,18 @@
 
 <div class="modal" id="certModal"><div class="modal-box" style="max-width:720px;background:#fff;padding:0">
   <div id="certDoc" class="cert">
-    <div class="cert-top"><b>ANDARMAX ACADEMY</b><span>KASUS 01 • SIMULASI</span></div>
+    <div class="cert-top"><b>ANDARLAB</b><span>KASUS 01 • SIMULASI</span></div>
     <h2>Laporan Audit + Sertifikat</h2>
     <div class="sub">Kasus 01 — PT Nusantara Retail (Fiktif) • Ethical Hacking — Dasar Pertahanan Sistem</div>
-    <div class="name" id="certName">BRO</div>
+    <div class="name" id="certName">ANDARLAB</div>
     <div class="desc">Pentester menyelesaikan audit simulasi:<br>1. Password lemah pada akun rina.finance — direkomendasikan rotasi + MFA<br>2. Phishing mengatasnamakan bank, meminta OTP — diblokir, dilaporkan<br>3. Port 8080 terbuka tanpa keperluan — ditutup<br>4. SQL Injection pada login internal — diperbaiki dengan prepared statement<br>5. XSS pada kolom komentar — diperbaiki dengan escape output + CSP<br>Total 3000 XP.</div>
     <div class="cert-grid">
-      <div><span>NOMOR</span><b id="certId">AMA-2026-0000</b></div>
+      <div><span>NOMOR</span><b id="certId">AL-2026-0000</b></div>
       <div><span>TANGGAL</span><b id="certDate">—</b></div>
       <div><span>WAKTU AUDIT</span><b id="certTime">—</b></div>
       <div><span>KETERANGAN</span><b>Lab lokal — bukan sertifikasi industri</b></div>
     </div>
-    <div class="cert-sign"><div><div class="line">Pentester<br><span id="certName2">BRO</span></div></div><div><div class="line">ANDARMAX ACADEMY<br>Yogyakarta</div></div></div>
+    <div class="cert-sign"><div><div class="line">Pentester<br><span id="certName2">ANDARLAB</span></div></div><div><div class="line">ANDARLAB<br>Yogyakarta</div></div></div>
     <div class="cert-foot">Semua nama, email, IP, dan perusahaan dalam laporan ini fiktif. Dokumen ini menyatakan penyelesaian simulasi pembelajaran. Bukan lisensi untuk mengakses sistem tanpa izin.</div>
   </div>
   <div style="padding:14px;background:#121412;display:flex;gap:8px;flex-wrap:wrap">
@@ -195,8 +218,9 @@
 <div id="printArea"></div>
 
 <script>
-const VALID_USER='bro', VALID_PASS='Andar_TE18';
-let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={sql:false,xss:false,port:false}, currentUser='BRO';
+const VALID_USER='andarlab', VALID_PASS='Andar_TE18';
+const LS_KEY='andarlab_users_v1';
+let xp=0, completed={}, bossActive=false, bossTime=60, bossId=null, bossFixed={sql:false,xss:false,port:false}, currentUser='ANDARLAB';
 let startTime=null, timerId=null, finalTime='00:00';
 const term=document.getElementById('term');
 function clean(s){ return (s||'').replace(/[\u200B-\u200D\uFEFF\s]+/g,'').trim(); }
@@ -204,6 +228,30 @@ function log(msg, cls=''){ const d=document.createElement('div'); if(cls) d.clas
 function fmt(sec){ const m=Math.floor(sec/60), s=sec%60; return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
 function startTimer(){ startTime=Date.now(); clearInterval(timerId); timerId=setInterval(()=>{ const el=Math.floor((Date.now()-startTime)/1000); const t=fmt(el); document.getElementById('topTimer').textContent=t; document.getElementById('timeText').textContent='Waktu: '+t; },1000); }
 function stopTimer(){ if(startTime){ finalTime=fmt(Math.floor((Date.now()-startTime)/1000)); } clearInterval(timerId); return finalTime; }
+
+// --- AKUN LOKAL ---
+function getUsers(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
+function saveUsers(u){ localStorage.setItem(LS_KEY, JSON.stringify(u)); }
+function showRegister(){ document.getElementById('formLogin').style.display='none'; document.getElementById('formRegister').style.display='block'; document.getElementById('loginErr').textContent=''; document.getElementById('loginOk').textContent=''; }
+function showLogin(){ document.getElementById('formRegister').style.display='none'; document.getElementById('formLogin').style.display='block'; document.getElementById('loginErr').textContent=''; document.getElementById('loginOk').textContent=''; }
+function doRegister(){
+  const u=clean(document.getElementById('regUser').value).toLowerCase();
+  const p=document.getElementById('regPass').value;
+  const p2=document.getElementById('regPass2').value;
+  const err=document.getElementById('loginErr'), ok=document.getElementById('loginOk');
+  err.textContent=''; ok.textContent='';
+  if(!u || u.length<3){ err.textContent='Username minimal 3 karakter, tanpa spasi.'; return; }
+  if(!/^[a-z0-9_]+$/.test(u)){ err.textContent='Username hanya huruf, angka, dan _.'; return; }
+  if(!p || p.length<6){ err.textContent='Password minimal 6 karakter.'; return; }
+  if(p!==p2){ err.textContent='Password tidak sama. Cek lagi.'; return; }
+  const users=getUsers();
+  if(u===VALID_USER || users[u]){ err.textContent='Username sudah dipakai. Coba yang lain.'; return; }
+  users[u]=p; saveUsers(users);
+  document.getElementById('userInput').value=u;
+  document.getElementById('passInput').value=p;
+  ok.textContent='Akun dibuat. Silakan masuk.';
+  showLogin();
+}
 function enterLab(name){
   currentUser=name.toUpperCase();
   document.getElementById('login').style.display='none';
@@ -220,17 +268,28 @@ function doLogin(){
   const rawName=document.getElementById('userInput').value.trim();
   const u=clean(rawName).toLowerCase();
   const p=clean(document.getElementById('passInput').value);
+  const err=document.getElementById('loginErr');
+  err.textContent='';
   if(u===VALID_USER && p===VALID_PASS){ enterLab(u); return; }
+  const users=getUsers();
+  if(users[u] && users[u]===p){ enterLab(u); return; }
   if(p==='' && u!==''){ enterLab(u); return; }
-  document.getElementById('loginErr').textContent='Kredensial salah. Lab: bro / Andar_TE18. Tamu: isi nama, kosongkan password.';
+  err.textContent='Kredensial salah. Coba: akun kamu sendiri, atau lab: andarlab / Andar_TE18.';
 }
 function guestLogin(){
   const n=document.getElementById('userInput').value.trim();
   if(!n){ document.getElementById('loginErr').textContent='Isi nama dulu untuk mode tamu.'; return; }
   enterLab(n);
 }
+function doLogout(){
+  xp=0; completed={}; bossActive=false; clearInterval(timerId); clearInterval(bossId);
+  document.getElementById('main').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('loginErr').textContent='';
+}
 document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('userInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('regPass2').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
 function addXP(n,label){
   xp+=n; const level = xp>=3000?4:xp>=1500?3:xp>=500?2:1;
   document.getElementById('xpText').textContent=xp+' / 3000 XP';
@@ -313,7 +372,7 @@ function bossCheck(){
 function openCert(){
   if(Object.keys(completed).length<8){ log('> Laporan terkunci. Selesaikan 8/8 modul.'); return; }
   stopTimer();
-  const d=new Date(); const id='AMA-2026-'+String(Math.floor(1000+Math.random()*9000));
+  const d=new Date(); const id='AL-2026-'+String(Math.floor(1000+Math.random()*9000));
   document.getElementById('certName').textContent=currentUser;
   document.getElementById('certName2').textContent=currentUser;
   document.getElementById('certId').textContent=id;
@@ -328,7 +387,7 @@ function printCert(){
 function getShareText(){
   const t = Object.keys(completed).length>=8 ? finalTime : 'belum selesai';
   const link = location.href;
-  return 'ANDARMAX ACADEMY — Kasus 01 Selesai\n' + currentUser + ' — Audit PT Nusantara Retail (Fiktif)\n8/8 bukti • 3000 XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + link;
+  return 'ANDARLAB — Kasus 01 Selesai\n' + currentUser + ' — Audit PT Nusantara Retail (Fiktif)\n8/8 bukti • 3000 XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + link;
 }
 function openShare(){
   closeModal('certModal');
@@ -347,9 +406,9 @@ function shareWA(){
 }
 const FILES={
   'email-rina.txt': 'Dari: bank-aman-login.xyz (PALSU — bukan domain bank asli)\nKepada: rina.finance@nusantara-retail.test\nSubjek: Akun Anda Terblokir\n\n"Halo Rina, akun Anda terblokir. Buka link ini dan masukkan OTP untuk membuka blokir."\n\n— Analisis: domain tidak resmi, meminta OTP, nada mendesak. Pola phishing.',
-  'chat-rina.txt': 'Chat — Pengirim tidak dikenal, mengaku "IT Support":\n\n"Hai Rina, saya dari IT. Server error. Kirim password + OTP ya, hanya sebentar."\n\nRina belum membalas. Tidak ada tiket IT resmi untuk permintaan ini.',
+  'chat-rina.txt': 'Chat — Pengirim tidak dikenal, mengaku "IT Support":\n\n"Halo Rina, saya dari IT. Server error. Kirim password + OTP ya, hanya sebentar."\n\nRina belum membalas. Tidak ada tiket IT resmi untuk permintaan ini.',
   'log.txt': '[2026-11-26 09:12] login gagal — rina.finance — 3x — password lemah terdeteksi\n[2026-11-26 09:14] akses dari IP tidak dikenal ke 192.168.10.5:8080\n[2026-11-26 09:15] port 8080 masih terbuka — tidak ada di daftar layanan resmi\n[2026-11-26 09:18] komentar internal mengandung tag script — belum di-escape',
-  'backup.txt': 'backup-2024.zip — isi simulasi:\n- users.csv (fiktif)\n- log.txt\n- FLAG{ANDARMAX_WHITE_HAT_2026}\n\nCatatan: backup lama tidak boleh berisi data sensitif. Ini temuan audit.'
+  'backup.txt': 'backup-2024.zip — isi simulasi:\n- users.csv (fiktif)\n- log.txt\n- FLAG{ANDARLAB_WHITE_HAT_2026}\n\nCatatan: backup lama tidak boleh berisi data sensitif. Ini temuan audit.'
 };
 document.getElementById('cmdInput').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
@@ -377,7 +436,7 @@ document.getElementById('cmdInput').addEventListener('keydown',e=>{
   }
   else if(cmd==='find flag'||cmd==='findflag'||cmd==='cat backup.txt'){
     if(cmd==='cat backup.txt'){ log(FILES['backup.txt']); }
-    else log('> FLAG{ANDARMAX_WHITE_HAT_2026}','ok');
+    else log('> FLAG{ANDARLAB_WHITE_HAT_2026}','ok');
     if(!completed['m5']&&xp>=900){ completed['m5']=true; addXP(600,'Modul 05 selesai'); }
   }
   else if(cmd==='fix sql'||cmd==='fix xss'||cmd==='fix port'){
