@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANDARLAB — Kasus 01 & 02</title>
 <style>
-  :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#2fbf5a; }
+  :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#3da35e; }
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.6}
   input,button{font-family:inherit;font-size:13px}
@@ -40,7 +40,7 @@
   .case p{font-size:12px;color:#c5c9c5}
   .case .files{margin-top:10px;font-size:12px;color:var(--dim);border-top:1px solid var(--line);padding-top:9px}
   .case .files code{color:var(--text)}
-  .case-card{border:1px solid var(--line);background:var(--panel);padding:16px;margin-top:12px;cursor:pointer}
+  .case-card{border:1px solid var(--line);background:var(--panel);padding:16px;margin-top:12px;cursor:pointer;border-radius:0}
   .case-card.active{border-color:var(--green)}
   .case-card h3{color:#fff;font-size:15px}
   .case-card p{font-size:12px;color:var(--dim);margin-top:4px}
@@ -57,7 +57,7 @@
   .term-input span{color:var(--green);white-space:nowrap}
   .term-input input{border:0;background:transparent;padding:0}
   .section{margin:20px 0 8px;font-size:11px;letter-spacing:.12em;color:var(--dim)}
-  .mission{border:1px solid var(--line);background:var(--panel);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+  .mission{border:1px solid var(--line);background:var(--panel);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px;border-radius:0}
   .mission.done{border-left:2px solid var(--green)}
   .mission.locked{opacity:.5}
   .mission h3{font-size:13px;color:#fff}
@@ -88,6 +88,12 @@
   .cert-sign .line{border-top:1px solid #111;padding-top:5px;min-width:170px}
   .cert-foot{margin-top:18px;font-size:10px;color:#777;border-top:1px solid #eee;padding-top:9px}
   .share-box{background:#000;border:1px solid var(--line);padding:12px;font-size:12px;white-space:pre-wrap;margin-top:10px;color:var(--text)}
+  /* HUD LIVE - kalem, bukan neon */
+  .hud-live{display:flex;gap:16px;flex-wrap:wrap;border:1px solid var(--line);background:#0a0c0a;padding:8px 12px;font-size:11px;color:#9aa89a;margin-top:12px;letter-spacing:.04em}
+  .hud-live b{color:#c8d0c8;font-weight:400}
+  .hud-live .live-dot{color:var(--green)}
+  .hud-live .live-dot::before{content:"● ";font-size:8px;animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
   @media(max-width:560px){.mission{flex-direction:column}.m-btn{width:100%}.cert{padding:22px}.cert-grid{grid-template-columns:1fr}}
   @media print{body{background:#fff}#login,#main,.modal{display:none!important}#printArea{display:block!important}}
   #printArea{display:none}
@@ -133,6 +139,15 @@
       <p id="headDesc">Pilih kasus. Selesaikan bukti, perbaiki temuan, tulis laporan.</p>
       <div class="progress"><i id="xpFill"></i></div>
       <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span><span id="timeText">Waktu: 00:00</span></div>
+    </div>
+
+    <div class="hud-live" id="hudLive">
+      <span><span class="live-dot">LIVE</span></span>
+      <span>WIB: <b id="liveClock">--:--:--</b></span>
+      <span>SESI: <b id="liveSession">00:00</b></span>
+      <span>TARGET: <b id="liveTarget">192.168.10.5</b></span>
+      <span>PING: <b id="livePing">-- ms</b></span>
+      <span>LOG: <b id="liveLog">menunggu perintah...</b></span>
     </div>
 
     <div id="caseSelect">
@@ -511,6 +526,30 @@ function copyShare(){
   else { document.getElementById('shareFeedback').textContent='Salin manual teks di atas.'; }
 }
 function shareWA(){ window.open('https://wa.me/?text='+encodeURIComponent(getShareText()),'_blank'); }
+
+// JAM LIVE - WIB asli dari HP pemain
+function updateLiveClock(){
+  const now = new Date();
+  const wib = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'Asia/Jakarta'});
+  const el = document.getElementById('liveClock');
+  if(el) el.textContent = wib + ' WIB';
+  const ping = document.getElementById('livePing');
+  if(ping) ping.textContent = (18 + Math.floor(Math.random()*25)) + ' ms';
+  const tgt = document.getElementById('liveTarget');
+  if(tgt) tgt.textContent = currentCase === 'kasus02' ? '192.168.20.7' : '192.168.10.5';
+  if(startTime){
+    const s = Math.floor((Date.now() - startTime)/1000);
+    const ses = document.getElementById('liveSession');
+    if(ses) ses.textContent = fmt(s);
+  }
+}
+setInterval(updateLiveClock, 1000);
+updateLiveClock();
+const liveLogs = ['memindai port...','cek log server...','sesi aktif','menunggu perintah...','koneksi stabil','tidak ada anomali baru'];
+setInterval(()=>{
+  const el = document.getElementById('liveLog');
+  if(el) el.textContent = liveLogs[Math.floor(Math.random()*liveLogs.length)];
+}, 4000);
 
 document.getElementById('cmdInput').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
