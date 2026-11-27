@@ -3,8 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none';">
-<title>ANDARLAB — Kasus 01 & 02</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none';">
+<meta name="theme-color" content="#0b0d0b">
+<meta name="description" content="ANDARLAB — Lab simulasi penetration testing, analisis log, dan keamanan aplikasi berbasis terminal interaktif.">
+<meta property="og:title" content="ANDARLAB — Lab Simulasi Keamanan Siber">
+<meta property="og:description" content="Selesaikan investigasi insiden, analisis kerentanan web & API, serta terapkan patch keamanan langsung dari terminal simulasi.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0d0b'/%3E%3Cpath d='M32 6L10 15v16c0 14.2 9.4 27.4 22 31 12.6-3.6 22-16.8 22-31V15L32 6z' fill='%23121412' stroke='%233da35e' stroke-width='3'/%3E%3Cpath d='M21 26l7 6-7 6M31 38h12' stroke='%233da35e' stroke-width='3' fill='none' stroke-linecap='square'/%3E%3C/svg%3E">
+<title>ANDARLAB — Kasus 01, 02 & 03</title>
 <style>
   :root{ --bg:#0b0d0b; --panel:#121412; --line:#232623; --text:#d8d8d8; --dim:#8a8f8a; --green:#3da35e; }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -26,12 +33,17 @@
   .hint{margin-top:14px;font-size:12px;color:var(--dim)}
   .switch{margin-top:12px;text-align:center;font-size:12px;color:var(--dim)}
   .switch button{background:none;border:0;color:var(--green);text-decoration:underline;cursor:pointer;font-size:12px}
-  .topbar{border-bottom:1px solid var(--line);padding:11px 16px;display:flex;justify-content:space-between;color:#fff;font-size:12px;letter-spacing:.06em}
+  .topbar{border-bottom:1px solid var(--line);padding:11px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;color:#fff;font-size:12px;letter-spacing:.06em;flex-wrap:wrap}
   .topbar span{color:var(--green)}
+  .top-link{background:none;border:0;color:#8a8f8a;text-decoration:underline;font-size:12px}
+  .top-link.warn{color:#e8c33c}
   .wrap{max-width:720px;margin:0 auto;padding:18px 14px 40px}
   .head{border:1px solid var(--line);background:var(--panel);padding:16px}
+  .head-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
   .head h2{font-size:18px;color:#fff;font-weight:700}
   .head p{color:var(--dim);font-size:12px;margin-top:5px}
+  .save-badge{font-size:10px;color:var(--dim);border:1px solid var(--line);padding:3px 7px;white-space:nowrap}
+  .save-badge.saved{color:var(--green);border-color:var(--green)}
   .progress{height:4px;background:#1c1e1c;margin-top:14px}
   .progress i{display:block;height:100%;background:var(--green);width:0}
   .meta-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px}
@@ -118,7 +130,7 @@
 <div id="login">
   <div class="login-box">
     <h1>ANDARLAB</h1>
-    <div class="meta">Kasus 01 & 02 — Lab simulasi. Audit atas izin, dalam cerita game.</div>
+    <div class="meta">Kasus 01, 02 & 03 — Lab simulasi. Audit atas izin, dalam cerita game.</div>
     <div id="formLogin">
       <label>USERNAME</label>
       <input id="userInput" value="andarlab" autocomplete="off" autocapitalize="none" placeholder="username kamu">
@@ -127,7 +139,7 @@
       <button class="btn-primary" onclick="doLogin()">Masuk</button>
       <button class="btn-ghost" onclick="guestLogin()">Main Sebagai Tamu</button>
       <div class="switch">Belum punya akun? <button onclick="showRegister()">Buat Akun</button></div>
-      <div class="hint">Akun lab: andarlab / Andar_TE18<br>Akun kamu: yang kamu buat sendiri, tersimpan di perangkat ini.</div>
+      <div class="hint">Akun lab: andarlab / Andar_TE18<br>Akun terdaftar menyimpan progres secara otomatis di perangkat ini.</div>
     </div>
     <div id="formRegister" style="display:none">
       <label>BUAT USERNAME</label>
@@ -138,7 +150,7 @@
       <input id="regPass2" type="password" autocomplete="off" placeholder="ulangi password">
       <button class="btn-primary" onclick="doRegister()">Buat Akun</button>
       <button class="btn-ghost" onclick="showLogin()">Kembali ke Masuk</button>
-      <div class="hint">Akun disimpan lokal di perangkat ini dalam format terenkripsi (SHA-256). Tidak dikirim ke server.</div>
+      <div class="hint">Akun disimpan lokal di perangkat ini dalam format hash SHA-256. Tidak dikirim ke server.</div>
     </div>
     <div class="err" id="loginErr"></div>
     <div class="ok" id="loginOk"></div>
@@ -146,11 +158,23 @@
 </div>
 
 <div id="main" style="display:none">
-  <div class="topbar"><div>ANDARLAB</div><div><span id="topRank">NEWBIE</span> • <span id="topTimer">00:00</span> • <button onclick="doLogout()" style="background:none;border:0;color:#8a8f8a;text-decoration:underline;font-size:12px">Keluar</button></div></div>
+  <div class="topbar">
+    <div>ANDARLAB</div>
+    <div>
+      <span id="topRank">NEWBIE</span> • <span id="topTimer">00:00</span> •
+      <button id="resetProgBtn" class="top-link" onclick="resetProgress()">Reset Progres</button> •
+      <button class="top-link" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
   <div class="wrap">
     <div class="head">
-      <h2 id="welcomeTitle">ANDARLAB</h2>
-      <p id="headDesc">Pilih kasus. Selesaikan bukti, perbaiki temuan, tulis laporan.</p>
+      <div class="head-top">
+        <div>
+          <h2 id="welcomeTitle">ANDARLAB</h2>
+          <p id="headDesc">Pilih kasus. Selesaikan bukti, perbaiki temuan, tulis laporan.</p>
+        </div>
+        <div class="save-badge" id="saveBadge">AUTO-SAVE AKTIF</div>
+      </div>
       <div class="progress"><i id="xpFill"></i></div>
       <div class="meta-row"><span id="xpText">0 / 3000 XP</span><span id="doneText">0 / 8 selesai</span><span id="timeText">Waktu: 00:00</span></div>
     </div>
@@ -165,18 +189,7 @@
       <span id="liveBossWrap" style="display:none;color:#e8c33c">PATCH: <b id="liveBossTime" style="color:#e8c33c">60s</b></span>
     </div>
 
-    <div id="caseSelect">
-      <div class="case-card active" id="card1" onclick="selectCase('kasus01')">
-        <h3>Kasus 01 — PT Nusantara Retail</h3>
-        <p>Phishing ke Rina, scan server, SQLi, XSS. Kasus pertama. Cocok untuk pemula.</p>
-        <div class="tag" id="tag1">8 Modul • 3000 XP • <span id="status1">Belum dimulai</span></div>
-      </div>
-      <div class="case-card" id="card2" onclick="selectCase('kasus02')">
-        <h3>Kasus 02 — Toko Online Fiktif: AndarShop</h3>
-        <p>Voucher palsu beredar, akun admin diambil alih, pesanan diubah. Lebih sulit, ada forensik pesanan.</p>
-        <div class="tag" id="tag2">8 Modul • 3200 XP • <span id="status2">Belum dimulai</span></div>
-      </div>
-    </div>
+    <div id="caseSelect"></div>
 
     <div class="case" id="briefBox">
       <div class="kicker" id="briefKicker">BRIEFING — KASUS 01</div>
@@ -188,7 +201,7 @@
     <div id="certBanner" class="cert-line">Audit selesai. Laporan tersedia.<button onclick="openCert()">Laporan + Sertifikat</button><button onclick="openShare()">Bagikan</button></div>
 
     <div class="term">
-      <div class="term-head"><span id="termTitle">root@andarlab: ~/kasus-01</span><span>SIMULASI</span></div>
+      <div class="term-head"><span id="termTitle">root@andarlab: ~/kasus01</span><span>SIMULASI</span></div>
       <div class="term-body" id="term"></div>
       <div class="term-input"><span>$</span><input id="cmdInput" autocomplete="off" autocapitalize="none" placeholder="help — ketik atau tap pintasan di bawah"></div>
       <div class="term-quick" id="termQuick"></div>
@@ -262,19 +275,31 @@
 
   const VALID_USER = 'andarlab';
   const LS_KEY = 'andarlab_users_v2';
+  const PROG_KEY = 'andarlab_progress_v1';
+
   let validPassHash = null;
   let currentUser = 'ANDARLAB';
+  let currentUserKey = 'andarlab';
+  let isGuest = false;
   let currentCase = 'kasus01';
   let timerId = null, sessionElapsed = 0, finalTime = '00:00';
   let bossActive = false, bossTime = 60, bossId = null, bossFixed = {};
   let passScoreVal = 0;
   let cmdHistory = [], historyIdx = -1;
+  let resetConfirmTimer = null;
+
   const term = document.getElementById('term');
   const cmdInput = document.getElementById('cmdInput');
 
   const CASES = {
     kasus01: {
-      title: 'Kasus 01 — PT Nusantara Retail', total: 3000,
+      shortLabel: 'Kasus 01',
+      title: 'Kasus 01 — PT Nusantara Retail',
+      cardDesc: 'Phishing ke Rina, scan server, SQLi, XSS. Kasus pertama. Cocok untuk pemula.',
+      targetIp: '192.168.10.5',
+      targetDomain: 'nusantara-retail.test',
+      total: 3000,
+      certLabel: 'KASUS 01 • SIMULASI',
       briefing: {
         kicker: 'BRIEFING — EMAIL DARI HR (FIKTIF)',
         title: 'PT Nusantara Retail meminta audit',
@@ -288,19 +313,95 @@
         'log.txt': '[2026-11-26 09:12] login gagal — rina.finance — 3x — password lemah terdeteksi\n[2026-11-26 09:14] akses dari IP tidak dikenal ke 192.168.10.5:8080\n[2026-11-26 09:15] port 8080 masih terbuka — tidak ada di daftar layanan resmi\n[2026-11-26 09:18] komentar internal mengandung tag script — belum di-escape',
         'backup.txt': 'backup-2024.zip — isi simulasi:\n- users.csv (fiktif)\n- log.txt\n- FLAG{ANDARLAB_WHITE_HAT_2026}\n\nCatatan: backup lama tidak boleh berisi data sensitif. Ini temuan audit.'
       },
+      scan: {
+        missionId: 'm3',
+        lines: [
+          {text: '> scan 192.168.10.5 — nusantara-retail.test [SIMULASI]'},
+          {text: '> 22/tcp open ssh — layanan resmi'},
+          {text: '> 80/tcp open http — website internal'},
+          {text: '> 443/tcp open https — website internal'},
+          {text: '> 8080/tcp open — TIDAK ADA di daftar resmi. Harus ditutup.', cls: 'warn'}
+        ]
+      },
+      flag: {
+        missionId: 'm5',
+        lines: [
+          {text: '> FLAG{ANDARLAB_WHITE_HAT_2026}', cls: 'ok'}
+        ]
+      },
+      boss: {
+        missionId: 'm8',
+        title: '08 — Perbaiki Sebelum Server Dimatikan',
+        desc: 'HR akan mematikan server dalam 60 detik untuk maintenance. Perbaiki 3 temuan dari terminal: fix sql — prepared statement | fix xss — escape output | fix port — tutup port 8080',
+        time: 60,
+        fixes: ['sql', 'xss', 'port']
+      },
       missions: [
-        {id:'m1',t:'01 — Password Rina',d:'Dari log: password Rina lemah. Uji dan tentukan standar yang benar.',xp:100,need:0},
-        {id:'m2',t:'02 — Email Phishing ke Rina',d:'Email yang diterima Rina meminta OTP lewat link tidak resmi.',xp:200,need:100},
-        {id:'m3',t:'03 — Scan Server 192.168.10.5',d:'Scan server fiktif. Catat port yang tidak perlu terbuka.',xp:300,need:300},
-        {id:'m4',t:'04 — Chat Social Engineering',d:'Seseorang mengaku dari IT meminta kredensial Rina.',xp:300,need:600},
-        {id:'m5',t:'05 — File Backup',d:'Temukan flag di backup.txt lewat terminal.',xp:600,need:900},
-        {id:'m6',t:'06 — SQLi di Login Internal',d:'Login internal rentan. Pilih perbaikan yang benar.',xp:400,need:1500},
-        {id:'m7',t:'07 — XSS di Komentar Internal',d:'Komentar internal menampilkan script apa adanya.',xp:400,need:1900},
-        {id:'m8',t:'08 — Perbaiki Sebelum Maintenance',d:'Perbaiki 3 temuan dalam 60 detik.',xp:700,need:2300},
+        {
+          id: 'm1', t: '01 — Password Rina', d: 'Dari log: password Rina lemah. Uji dan tentukan standar yang benar.', xp: 100, need: 0,
+          type: 'password', passTitle: '01 — Password Rina', passDesc: 'Di log, password Rina tercatat lemah. Uji seberapa lemah, lalu tentukan standar yang benar.'
+        },
+        {
+          id: 'm2', t: '02 — Email Phishing ke Rina', d: 'Email yang diterima Rina meminta OTP lewat link tidak resmi.', xp: 200, need: 100,
+          type: 'quiz',
+          quiz: {
+            q: 'Rina menerima email ini. Baca juga bukti: cat email-rina.txt. Tindakan yang benar?',
+            opts: ['Buka link dan masukkan OTP', 'Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.', 'Kirim password saja, OTP jangan'],
+            code: '', correct: 1, explain: 'Link tidak resmi + meminta OTP adalah pola phishing.'
+          }
+        },
+        {
+          id: 'm3', t: '03 — Scan Server 192.168.10.5', d: 'Scan server fiktif. Catat port yang tidak perlu terbuka.', xp: 300, need: 300,
+          type: 'terminal', hint: '> Modul 03: ketik scan.'
+        },
+        {
+          id: 'm4', t: '04 — Chat Social Engineering', d: 'Seseorang mengaku dari IT meminta kredensial Rina.', xp: 300, need: 600,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca bukti: cat chat-rina.txt. Seseorang mengaku dari IT meminta password dan OTP Rina. Respons yang benar?',
+            opts: ['Berikan', 'Tolak. OTP dan password tidak dibagikan ke siapa pun.', 'Berikan OTP saja'],
+            code: '', correct: 1, explain: 'Tidak ada alasan yang sah untuk meminta OTP orang lain.'
+          }
+        },
+        {
+          id: 'm5', t: '05 — File Backup', d: 'Temukan flag di backup.txt lewat terminal.', xp: 600, need: 900,
+          type: 'terminal', hint: '> Modul 05: ketik cat backup.txt atau find flag.'
+        },
+        {
+          id: 'm6', t: '06 — SQLi di Login Internal', d: 'Login internal rentan. Pilih perbaikan yang benar.', xp: 400, need: 1500,
+          type: 'quiz',
+          quiz: {
+            q: 'Login internal PT Nusantara Retail (fiktif) rentan karena input digabung langsung ke query. Perbaikan yang benar?',
+            opts: ['Sembunyikan pesan error', 'Gunakan prepared statement / parameterized query dan validasi input', 'Ganti nama tabel'],
+            code: 'query = "SELECT * FROM users WHERE user = \'" + input + "\'"',
+            correct: 1, explain: 'Prepared statement memisahkan data dari perintah SQL.'
+          }
+        },
+        {
+          id: 'm7', t: '07 — XSS di Komentar Internal', d: 'Komentar internal menampilkan script apa adanya.', xp: 400, need: 1900,
+          type: 'quiz',
+          quiz: {
+            q: 'Komentar internal berisi tag script dan tampil apa adanya. Perbaikan yang benar?',
+            opts: ['Biarkan, hanya alert', 'Escape / sanitasi output dan terapkan Content Security Policy', 'Hapus fitur komentar'],
+            code: '<scr' + 'ipt>alert("x")<\/scr' + 'ipt> Halo!',
+            correct: 1, explain: 'Output dari pengguna harus di-escape sebelum dirender.'
+          }
+        },
+        {
+          id: 'm8', t: '08 — Perbaiki Sebelum Maintenance', d: 'Perbaiki 3 temuan dalam 60 detik.', xp: 700, need: 2300,
+          type: 'boss'
+        }
       ]
     },
+
     kasus02: {
-      title: 'Kasus 02 — AndarShop (Toko Online Fiktif)', total: 3200,
+      shortLabel: 'Kasus 02',
+      title: 'Kasus 02 — AndarShop (Toko Online Fiktif)',
+      cardDesc: 'Voucher palsu beredar, akun admin diambil alih, pesanan diubah. Lebih sulit, ada forensik pesanan.',
+      targetIp: '192.168.20.7',
+      targetDomain: 'andarshop.test',
+      total: 3200,
+      certLabel: 'KASUS 02 • SIMULASI',
       briefing: {
         kicker: 'BRIEFING — DARI OWNER ANDARSHOP (FIKTIF)',
         title: 'AndarShop: Voucher Palsu & Admin Diambil Alih',
@@ -314,26 +415,263 @@
         'order-log.txt': '[2026-11-27 10:02] Order #A102 — user: budi_01 — alamat: Yogyakarta\n[2026-11-27 10:05] Order #A102 — alamat diubah ke kota lain — oleh: admin@andarshop.test (sesi mencurigakan)\n[2026-11-27 10:09] Order #A103 — dibuka oleh user: budi_01 — SEHARUSNYA milik sari_02\n[2026-11-27 10:12] Order #A104 — harga diubah dari 250000 jadi 25000 di request — lolos ke checkout',
         'admin-log.txt': '[2026-11-27 09:58] login gagal admin — 47x dalam 2 menit — dari IP sama — tidak ada rate-limit\n[2026-11-27 10:00] login berhasil admin — dari IP tidak dikenal — setelah klik link phishing\n[2026-11-27 10:01] password admin diganti\n[2026-11-27 10:03] voucher ANDAR90 dibuat dari sesi admin palsu'
       },
+      scan: {
+        missionId: 'm4',
+        lines: [
+          {text: '> scan 192.168.20.7 — andarshop.test [SIMULASI]'},
+          {text: '> 22/tcp open ssh — layanan resmi'},
+          {text: '> 80/tcp open http — toko online'},
+          {text: '> 443/tcp open https — toko online'},
+          {text: '> 8443/tcp open admin panel — tanpa rate-limit, bisa brute force.', cls: 'warn'},
+          {text: '> Jejak cocok dengan admin-log.txt: 47x login gagal.'}
+        ]
+      },
+      flag: {
+        missionId: null,
+        lines: [
+          {text: '> FLAG{ANDARSHOP_DEFENDED_2026}', cls: 'ok'},
+          {text: '> Catatan: temuan IDOR + harga di order-log.txt sudah tercatat di laporan.'}
+        ]
+      },
+      boss: {
+        missionId: 'm8',
+        title: '08 — Amankan AndarShop dalam 60 Detik',
+        desc: 'Owner akan menutup toko dalam 60 detik. Perbaiki 3 temuan: fix voucher — nonaktifkan ANDAR90 | fix price — validasi harga di server | fix ratelimit — aktifkan limit login',
+        time: 60,
+        fixes: ['voucher', 'price', 'ratelimit']
+      },
       missions: [
-        {id:'m1',t:'01 — Voucher Palsu',d:'Voucher ANDAR90 beredar. Bedakan voucher resmi vs palsu.',xp:200,need:0},
-        {id:'m2',t:'02 — Akun Palsu @andarshop_promo',d:'Akun yang menyebar voucher meniru akun resmi.',xp:200,need:200},
-        {id:'m3',t:'03 — Login Palsu ke Admin',d:'Admin klik link login palsu. Apa yang terjadi?',xp:300,need:400},
-        {id:'m4',t:'04 — Scan Server 192.168.20.7',d:'Scan server AndarShop. Cek port admin yang terbuka.',xp:300,need:700},
-        {id:'m5',t:'05 — Pesanan Diubah (IDOR)',d:'Budi bisa buka pesanan Sari. Kenapa bisa?',xp:600,need:1000},
-        {id:'m6',t:'06 — Harga Diubah di Request',d:'Harga 250.000 jadi 25.000 di checkout. Di mana salahnya?',xp:500,need:1600},
-        {id:'m7',t:'07 — Brute Force Tanpa Limit',d:'47x login gagal tanpa diblokir. Perbaikannya apa?',xp:400,need:2100},
-        {id:'m8',t:'08 — Amankan AndarShop dalam 60 Detik',d:'Perbaiki 3 temuan: voucher, harga, rate-limit.',xp:700,need:2500},
+        {
+          id: 'm1', t: '01 — Voucher Palsu', d: 'Voucher ANDAR90 beredar. Bedakan voucher resmi vs palsu.', xp: 200, need: 0,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat voucher.txt. Voucher ANDAR90 diskon 90% beredar. Sikap yang benar?',
+            opts: ['Langsung pakai, mumpung gratis', 'Cek ke akun resmi / owner. Voucher tidak ada di database resmi = palsu, jangan disebar.', 'Beli lalu jual lagi'],
+            code: '', correct: 1, explain: 'Voucher yang tidak ada di sistem resmi adalah palsu, walau terlihat meyakinkan.'
+          }
+        },
+        {
+          id: 'm2', t: '02 — Akun Palsu @andarshop_promo', d: 'Akun yang menyebar voucher meniru akun resmi.', xp: 200, need: 200,
+          type: 'quiz',
+          quiz: {
+            q: 'Akun penyebar adalah @andarshop_promo, akun resmi @andarshop. Bedanya?',
+            opts: ['Sama saja', 'Akun palsu meniru nama + logo, tapi handle beda dan tidak terverifikasi. Cek handle, bukan foto.', 'Yang followersnya banyak pasti asli'],
+            code: '', correct: 1, explain: 'Penipu meniru tampilan. Cek handle persis, riwayat, dan tautan resmi.'
+          }
+        },
+        {
+          id: 'm3', t: '03 — Login Palsu ke Admin', d: 'Admin klik link login palsu. Apa yang terjadi?', xp: 300, need: 400,
+          type: 'quiz',
+          quiz: {
+            q: 'Admin klik andarshop-login.xyz yang meniru login asli. Setelah itu password diganti. Apa yang terjadi?',
+            opts: ['Admin lupa password', 'Credential harvesting: password admin dicuri lewat halaman palsu, lalu dipakai untuk ambil alih.', 'Server error'],
+            code: '', correct: 1, explain: 'Halaman login palsu = pencurian kredensial. Wajib reset + MFA + cek sesi.'
+          }
+        },
+        {
+          id: 'm4', t: '04 — Scan Server 192.168.20.7', d: 'Scan server AndarShop. Cek port admin yang terbuka.', xp: 300, need: 700,
+          type: 'terminal', hint: '> Modul 04: ketik scan.'
+        },
+        {
+          id: 'm5', t: '05 — Pesanan Diubah (IDOR)', d: 'Budi bisa buka pesanan Sari. Kenapa bisa?', xp: 600, need: 1000,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat order-log.txt. Budi (budi_01) bisa buka Order #A103 milik Sari. Ini disebut?',
+            opts: ['Fitur berbagi pesanan', 'IDOR — server tidak cek apakah pesanan itu milik user yang meminta.', 'Bug tampilan'],
+            code: '', correct: 1, explain: 'Server harus cek kepemilikan: order milik siapa, siapa yang boleh buka.'
+          }
+        },
+        {
+          id: 'm6', t: '06 — Harga Diubah di Request', d: 'Harga 250.000 jadi 25.000 di checkout. Di mana salahnya?', xp: 500, need: 1600,
+          type: 'quiz',
+          quiz: {
+            q: 'Harga 250.000 jadi 25.000 di checkout dan lolos. Di mana yang salah?',
+            opts: ['Di kasir', 'Harga dipercaya dari request user. Harusnya harga diambil dari database di server, dan divalidasi ulang.', 'Di internet user'],
+            code: '', correct: 1, explain: 'Jangan percaya harga dari client. Harga final harus dari server.'
+          }
+        },
+        {
+          id: 'm7', t: '07 — Brute Force Tanpa Limit', d: '47x login gagal tanpa diblokir. Perbaikannya apa?', xp: 400, need: 2100,
+          type: 'quiz',
+          quiz: {
+            q: '47x login gagal dalam 2 menit tanpa diblokir. Perbaikan yang benar?',
+            opts: ['Biarkan, nanti capek sendiri', 'Rate-limit + lockout sementara + alert + CAPTCHA + MFA', 'Ganti password tiap hari'],
+            code: '', correct: 1, explain: 'Tanpa limit, penyerang bisa coba ribuan password. Limit + MFA adalah pertahanan dasar.'
+          }
+        },
+        {
+          id: 'm8', t: '08 — Amankan AndarShop dalam 60 Detik', d: 'Perbaiki 3 temuan: voucher, harga, rate-limit.', xp: 700, need: 2500,
+          type: 'boss'
+        }
+      ]
+    },
+
+    kasus03: {
+      shortLabel: 'Kasus 03',
+      title: 'Kasus 03 — AndarPay (API Gateway Fiktif)',
+      cardDesc: 'Kebocoran JWT secret, eskalasi token alg:none, BOLA riwayat wallet, dan SSRF webhook. Tingkat menengah.',
+      targetIp: '192.168.30.9',
+      targetDomain: 'api.andarpay.test',
+      total: 3500,
+      certLabel: 'KASUS 03 • SIMULASI',
+      briefing: {
+        kicker: 'BRIEFING — DARI SECURITY LEAD ANDARPAY (FIKTIF)',
+        title: 'AndarPay: Anomali Refund & Akses Saldo Lintas Akun',
+        text: 'Dari: secops@andarpay.test — Kepada: Pentester<br><br>"Sistem monitoring mendeteksi request refund memakai token admin palsu, akses riwayat wallet pengguna lain, serta koneksi keluar dari server webhook ke IP metadata internal. Kami memberi izin audit pada lingkungan simulasi ini. Periksa log gateway, sampel JWT, dan endpoint debug."',
+        files: 'Target fiktif: <code>api.andarpay.test</code> • Server: <code>192.168.30.9</code> • Gateway: <code>v1</code><br>Bukti di terminal: <code>cat api-gateway.log</code> • <code>cat jwt-sample.txt</code> • <code>cat webhook-alert.txt</code> • <code>cat env-leak.txt</code>'
+      },
+      certDesc: 'Pentester menyelesaikan audit simulasi:<br>1. Dokumentasi Swagger & endpoint /debug/env ditutup dari akses publik<br>2. Rotasi JWT_SECRET & penolakan header alg:none pada verifikasi token<br>3. Penutupan celah BOLA/IDOR pada endpoint /api/v1/wallet/{id}/history<br>4. Mitigasi SSRF pada webhook tester dengan allowlist domain & blokir IP privat<br>Total 3500 XP.',
+      files: {
+        'api-gateway.log': '[2026-11-27 08:40] GET /swagger/index.html — 200 OK — IP publik (dokumentasi API internal terbuka)\n[2026-11-27 08:42] GET /api/v1/wallet/9012/history — 200 OK — token user_9001 (akses data akun lain)\n[2026-11-27 08:45] POST /api/v1/webhook/test {"url":"http://169.254.169.254/latest/meta-data/"} — 200 OK (SSRF)\n[2026-11-27 08:48] POST /api/v1/admin/refund — token JWT role:"admin" lolos dengan alg:"none"',
+        'jwt-sample.txt': 'Token ditemukan di log debug (FIKTIF):\nHeader: {"alg":"none","typ":"JWT"}\nPayload: {"sub":"user_9001","role":"admin","exp":1900000000}\nSignature: (kosong)\n\nCatatan: Server menerima token tanpa verifikasi signature (alg:none) dan secret key memakai "secret123".',
+        'webhook-alert.txt': 'Alert SOC — AndarPay (FIKTIF):\nEndpoint /api/v1/webhook/test menerima parameter "url" langsung dari input merchant tanpa allowlist.\nPenyerang mengarahkan request server ke 127.0.0.1:6379 dan 169.254.169.254 (cloud metadata).',
+        'env-leak.txt': 'Hasil inspeksi response error /debug/env (FIKTIF):\nAPP_ENV=production\nJWT_SECRET=secret123\nFLAG{ANDARPAY_API_SECURED_2026}\n\nCatatan: Endpoint debug dan secret key default tidak boleh terekspos ke publik.'
+      },
+      scan: {
+        missionId: 'm4',
+        lines: [
+          {text: '> scan 192.168.30.9 — api.andarpay.test [SIMULASI]'},
+          {text: '> 22/tcp open ssh — layanan resmi'},
+          {text: '> 443/tcp open https — API Gateway utama'},
+          {text: '> 8000/tcp open debug-api — /swagger & /debug/env terbuka publik.', cls: 'warn'},
+          {text: '> Rekomendasi: matikan port 8000 dan nonaktifkan mode debug di production.'}
+        ]
+      },
+      flag: {
+        missionId: 'm7',
+        lines: [
+          {text: '> FLAG{ANDARPAY_API_SECURED_2026}', cls: 'ok'}
+        ]
+      },
+      boss: {
+        missionId: 'm8',
+        title: '08 — Patch API Gateway dalam 60 Detik',
+        desc: 'Terapkan 3 patch kritis melalui terminal: fix jwt — kunci algoritma HS256 & rotasi secret | fix ssrf — blokir IP privat/metadata | fix bola — validasi pemilik wallet',
+        time: 60,
+        fixes: ['jwt', 'ssrf', 'bola']
+      },
+      missions: [
+        {
+          id: 'm1', t: '01 — Dokumentasi API Terbuka', d: 'Swagger UI terbuka di server production. Apa risikonya dan bagaimana penanganannya?', xp: 200, need: 0,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat api-gateway.log. Endpoint /swagger/index.html terbuka di production. Tindakan yang benar?',
+            opts: ['Biarkan agar developer mudah testing', 'Nonaktifkan Swagger di production dan batasi dokumentasi API hanya untuk jaringan internal / VPN', 'Ganti URL-nya menjadi /swagger2'],
+            code: 'GET /swagger/index.html -> 200 OK (Public)',
+            correct: 1, explain: 'Dokumentasi API publik memetakan seluruh struktur endpoint dan parameter sensitif bagi penyerang.'
+          }
+        },
+        {
+          id: 'm2', t: '02 — Kebocoran JWT Secret', d: 'Secret key lemah ditemukan pada endpoint debug yang terekspos.', xp: 300, need: 200,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat env-leak.txt. Ditemukan JWT_SECRET=secret123. Langkah remediasi yang tepat?',
+            opts: ['Encode secret123 dengan Base64', 'Matikan /debug/env, ganti JWT_SECRET dengan string acak panjang berentropi tinggi, dan cabut sesi lama', 'Sembunyikan hanya dari file log'],
+            code: 'JWT_SECRET=secret123',
+            correct: 1, explain: 'Secret lemah mudah di-brute force; rotasi secret otomatis membatalkan token palsu yang sudah dibuat.'
+          }
+        },
+        {
+          id: 'm3', t: '03 — Eskalasi Token JWT alg:none', d: 'Penyerang mengubah role menjadi admin tanpa tanda tangan kriptografis.', xp: 300, need: 500,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat jwt-sample.txt. Mengapa server menerima token dengan header {"alg":"none"}?',
+            opts: ['Karena masa berlaku token belum habis', 'Library verifikasi JWT tidak mengunci whitelist algoritma sehingga menerima token tanpa signature', 'Karena payload tidak dienkripsi'],
+            code: '{"alg":"none","typ":"JWT"}.{"sub":"user_9001","role":"admin"}.',
+            correct: 1, explain: 'Server wajib memvalidasi algoritma secara eksplisit (misalnya hanya HS256/RS256) dan menolak alg:none.'
+          }
+        },
+        {
+          id: 'm4', t: '04 — Scan API Gateway 192.168.30.9', d: 'Pindai server AndarPay untuk mengidentifikasi port debug yang terbuka.', xp: 400, need: 800,
+          type: 'terminal', hint: '> Modul 04: ketik scan.'
+        },
+        {
+          id: 'm5', t: '05 — BOLA / IDOR Riwayat Wallet', d: 'User 9001 dapat membaca transaksi milik user 9012 lewat parameter URL.', xp: 500, need: 1200,
+          type: 'quiz',
+          quiz: {
+            q: 'Endpoint GET /api/v1/wallet/9012/history dapat diakses oleh token milik user_9001. Perbaikan yang benar?',
+            opts: ['Ubah ID wallet menjadi angka acak tanpa cek otorisasi', 'Validasi di server bahwa pemilik wallet 9012 sama dengan claim sub pada JWT yang terautentikasi', 'Gunakan metode POST untuk mengambil riwayat'],
+            code: 'GET /api/v1/wallet/9012/history (Authorization: Bearer <token_user_9001>)',
+            correct: 1, explain: 'Broken Object Level Authorization (BOLA) dicegah dengan memverifikasi kepemilikan objek pada setiap request.'
+          }
+        },
+        {
+          id: 'm6', t: '06 — SSRF pada Fitur Webhook', d: 'Server dipaksa mengirim request HTTP ke layanan metadata internal.', xp: 500, need: 1700,
+          type: 'quiz',
+          quiz: {
+            q: 'Baca: cat webhook-alert.txt. Penyerang mengirim url=http://169.254.169.254/latest/meta-data/. Mitigasi yang benar?',
+            opts: ['Hanya blokir kata "localhost" dengan regex', 'Terapkan allowlist domain tujuan, wajibkan HTTPS, dan blokir rentang IP privat/loopback/link-local setelah DNS lookup', 'Batasi panjang URL maksimal 50 karakter'],
+            code: 'POST /api/v1/webhook/test {"url":"http://169.254.169.254/..."}',
+            correct: 1, explain: 'Filter string sederhana mudah dilewati; validasi hasil resolusi IP mencegah akses ke jaringan internal.'
+          }
+        },
+        {
+          id: 'm7', t: '07 — Bukti Kebocoran Environment', d: 'Ambil flag dari file env-leak.txt melalui terminal.', xp: 500, need: 2200,
+          type: 'terminal', hint: '> Modul 07: ketik cat env-leak.txt atau find flag.'
+        },
+        {
+          id: 'm8', t: '08 — Patch API Gateway dalam 60 Detik', d: 'Perbaiki 3 celah: JWT, SSRF, dan BOLA sebelum waktu habis.', xp: 800, need: 2700,
+          type: 'boss'
+        }
       ]
     }
   };
 
-  let progress = {
-    kasus01: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false},
-    kasus02: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false}
-  };
+  function createEmptyProgress(){
+    const obj = {};
+    Object.keys(CASES).forEach(k => {
+      obj[k] = { xp: 0, completed: {}, elapsed: 0, finalTime: '00:00', done: false };
+    });
+    return obj;
+  }
+
+  let progress = createEmptyProgress();
 
   function cur(){ return progress[currentCase]; }
   function cleanUser(s){ return (s || '').replace(/[\u200B-\u200D\uFEFF\s]+/g, '').trim(); }
+
+  function updateSaveBadge(text, ok = true){
+    const badge = document.getElementById('saveBadge');
+    if(!badge) return;
+    badge.textContent = text;
+    badge.classList.toggle('saved', ok);
+  }
+
+  function loadProgress(userKey){
+    const base = createEmptyProgress();
+    if(isGuest || !userKey) return base;
+    try{
+      const all = JSON.parse(localStorage.getItem(PROG_KEY) || '{}');
+      const saved = all[userKey];
+      if(!saved) return base;
+      Object.keys(base).forEach(k => {
+        if(saved[k]){
+          base[k] = {
+            xp: Number(saved[k].xp) || 0,
+            completed: (saved[k].completed && typeof saved[k].completed === 'object') ? saved[k].completed : {},
+            elapsed: Number(saved[k].elapsed) || 0,
+            finalTime: typeof saved[k].finalTime === 'string' ? saved[k].finalTime : '00:00',
+            done: !!saved[k].done
+          };
+        }
+      });
+    }catch(e){}
+    return base;
+  }
+
+  function saveProgress(){
+    if(isGuest || !currentUserKey) return;
+    try{
+      const all = JSON.parse(localStorage.getItem(PROG_KEY) || '{}');
+      all[currentUserKey] = progress;
+      localStorage.setItem(PROG_KEY, JSON.stringify(all));
+      updateSaveBadge('TERSIMPAN', true);
+    }catch(e){
+      updateSaveBadge('GAGAL SIMPAN', false);
+    }
+  }
+
+  window.addEventListener('beforeunload', saveProgress);
 
   function log(msg, cls = ''){
     const d = document.createElement('div');
@@ -364,6 +702,7 @@
       if(!cur().done){
         cur().elapsed++;
         syncCaseTimerUI();
+        if(cur().elapsed % 5 === 0) saveProgress();
       }
     }, 1000);
   }
@@ -372,6 +711,7 @@
     cur().finalTime = fmt(cur().elapsed);
     finalTime = cur().finalTime;
     syncCaseTimerUI();
+    saveProgress();
     return cur().finalTime;
   }
 
@@ -479,11 +819,18 @@
     ok.textContent = 'Akun dibuat (password di-hash SHA-256). Silakan masuk.';
   }
 
-  function enterLab(name){
+  function enterLab(name, guestMode = false){
+    isGuest = guestMode;
+    currentUserKey = cleanUser(name).toLowerCase();
     currentUser = name.toUpperCase();
+    progress = loadProgress(currentUserKey);
+
     document.getElementById('login').style.display = 'none';
     document.getElementById('main').style.display = 'block';
-    document.getElementById('welcomeTitle').textContent = currentUser;
+    document.getElementById('welcomeTitle').textContent = currentUser + (isGuest ? ' (TAMU)' : '');
+    updateSaveBadge(isGuest ? 'MODE TAMU (TIDAK DISIMPAN)' : 'AUTO-SAVE AKTIF', !isGuest);
+
+    renderCaseCards();
     selectCase('kasus01');
     startTimer();
   }
@@ -500,13 +847,13 @@
 
     const hashedInput = await hashPassword(p);
     if(u === VALID_USER && hashedInput === await getValidPassHash()){
-      enterLab(u);
+      enterLab(u, false);
       return;
     }
 
     const users = getUsers();
     if(users[u] && users[u] === hashedInput){
-      enterLab(u);
+      enterLab(u, false);
       return;
     }
 
@@ -523,14 +870,38 @@
       err.textContent = 'Username ini terdaftar. Silakan masuk menggunakan password.';
       return;
     }
-    enterLab(n);
+    enterLab(n, true);
+  }
+
+  function resetProgress(){
+    const btn = document.getElementById('resetProgBtn');
+    if(!btn.dataset.confirm){
+      btn.dataset.confirm = '1';
+      btn.textContent = 'Yakin Reset?';
+      btn.classList.add('warn');
+      clearTimeout(resetConfirmTimer);
+      resetConfirmTimer = setTimeout(() => {
+        delete btn.dataset.confirm;
+        btn.textContent = 'Reset Progres';
+        btn.classList.remove('warn');
+      }, 3500);
+      return;
+    }
+
+    clearTimeout(resetConfirmTimer);
+    delete btn.dataset.confirm;
+    btn.textContent = 'Reset Progres';
+    btn.classList.remove('warn');
+
+    progress = createEmptyProgress();
+    saveProgress();
+    selectCase(currentCase);
+    log('> Progres seluruh kasus berhasil direset ke 0 XP.', 'warn');
   }
 
   function doLogout(){
-    progress = {
-      kasus01: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false},
-      kasus02: {xp:0, completed:{}, elapsed:0, finalTime:'00:00', done:false}
-    };
+    saveProgress();
+    progress = createEmptyProgress();
     sessionElapsed = 0;
     bossActive = false;
     clearInterval(timerId); timerId = null;
@@ -545,6 +916,21 @@
   document.getElementById('passInput').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
   document.getElementById('userInput').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
   document.getElementById('regPass2').addEventListener('keydown', e => { if(e.key === 'Enter') doRegister(); });
+
+  function renderCaseCards(){
+    const wrap = document.getElementById('caseSelect');
+    wrap.innerHTML = '';
+    Object.keys(CASES).forEach(key => {
+      const c = CASES[key];
+      const card = document.createElement('div');
+      card.className = 'case-card' + (key === currentCase ? ' active' : '');
+      card.id = 'card_' + key;
+      card.onclick = () => selectCase(key);
+      card.innerHTML = `<h3>${c.title}</h3><p>${c.cardDesc}</p><div class="tag">${c.missions.length} Modul • ${c.total} XP • <span id="status_${key}">Belum dimulai</span></div>`;
+      wrap.appendChild(card);
+    });
+    updateCaseStatus();
+  }
 
   function renderQuickBar(){
     const bar = document.getElementById('termQuick');
@@ -565,12 +951,17 @@
   }
 
   function selectCase(key){
+    if(!CASES[key]) return;
     currentCase = key;
     bossActive = false;
     clearInterval(bossId); bossId = null;
     document.getElementById('liveBossWrap').style.display = 'none';
-    document.getElementById('card1').classList.toggle('active', key === 'kasus01');
-    document.getElementById('card2').classList.toggle('active', key === 'kasus02');
+
+    Object.keys(CASES).forEach(k => {
+      const card = document.getElementById('card_' + k);
+      if(card) card.classList.toggle('active', k === key);
+    });
+
     const c = CASES[key];
     document.getElementById('briefKicker').textContent = c.briefing.kicker;
     document.getElementById('briefTitle').textContent = c.briefing.title;
@@ -579,15 +970,15 @@
     document.getElementById('termTitle').textContent = 'root@andarlab: ~/' + key;
     document.getElementById('headDesc').textContent = c.title + ' — ' + c.total + ' XP';
     document.getElementById('certBanner').style.display = cur().done ? 'block' : 'none';
+
     term.innerHTML = '';
-    if(key === 'kasus01'){
-      log('> Kasus 01 dimuat. Target fiktif: nusantara-retail.test', 'ok');
-      log('> Bukti: cat email-rina.txt — cat chat-rina.txt — cat log.txt — cat backup.txt');
-    } else {
-      log('> Kasus 02 dimuat. Target fiktif: andarshop.test', 'ok');
-      log('> Bukti: cat voucher.txt — cat chat-admin.txt — cat order-log.txt — cat admin-log.txt');
+    log('> ' + c.shortLabel + ' dimuat. Target fiktif: ' + c.targetDomain, 'ok');
+    log('> Bukti: ' + Object.keys(c.files).map(f => 'cat ' + f).join(' — '));
+    if(cur().xp > 0){
+      log('> Progres tersimpan dipulihkan: ' + cur().xp + ' XP (' + Object.keys(cur().completed).length + '/' + c.missions.length + ' modul).', 'ok');
     }
     log('> ketik help atau tap pintasan perintah di bawah.');
+
     syncCaseTimerUI();
     updateHUD();
     renderMissions();
@@ -596,8 +987,12 @@
   }
 
   function updateCaseStatus(){
-    document.getElementById('status1').textContent = progress.kasus01.done ? 'Selesai • ' + progress.kasus01.finalTime : (progress.kasus01.xp > 0 ? progress.kasus01.xp + ' XP — Lanjut' : 'Belum dimulai');
-    document.getElementById('status2').textContent = progress.kasus02.done ? 'Selesai • ' + progress.kasus02.finalTime : (progress.kasus02.xp > 0 ? progress.kasus02.xp + ' XP — Lanjut' : 'Belum dimulai');
+    Object.keys(CASES).forEach(key => {
+      const el = document.getElementById('status_' + key);
+      if(!el) return;
+      const p = progress[key];
+      el.textContent = p.done ? 'Selesai • ' + p.finalTime : (p.xp > 0 ? p.xp + ' XP — Lanjut' : 'Belum dimulai');
+    });
   }
 
   function updateHUD(){
@@ -606,21 +1001,23 @@
     document.getElementById('xpFill').style.width = Math.min(100, p.xp / c.total * 100) + '%';
     const level = p.xp >= c.total ? 'MASTER WHITE HAT' : p.xp >= c.total * 0.5 ? 'ETHICAL HACKER' : p.xp >= 200 ? 'JUNIOR PENTESTER' : 'NEWBIE';
     document.getElementById('topRank').textContent = level;
-    document.getElementById('doneText').textContent = Object.keys(p.completed).length + ' / 8 selesai';
+    document.getElementById('doneText').textContent = Object.keys(p.completed).length + ' / ' + c.missions.length + ' selesai';
   }
 
   function addXP(n, label){
     const p = cur(), c = CASES[currentCase];
     p.xp += n;
-    updateHUD(); updateCaseStatus();
+    updateHUD();
+    updateCaseStatus();
     if(label) log('> +' + n + ' XP — ' + label, 'ok');
-    if(p.xp >= c.total && Object.keys(p.completed).length >= 8 && !p.done){
+    if(p.xp >= c.total && Object.keys(p.completed).length >= c.missions.length && !p.done){
       p.done = true;
       stopTimer();
       document.getElementById('certBanner').style.display = 'block';
       log('> Audit selesai. Waktu: ' + p.finalTime + '. ketik: certificate atau share', 'ok');
       updateCaseStatus();
     }
+    saveProgress();
     renderMissions();
   }
 
@@ -631,7 +1028,7 @@
       const done = !!p.completed[m.id], locked = p.xp < m.need;
       const el = document.createElement('div');
       el.className = 'mission' + (done ? ' done' : '') + (locked ? ' locked' : '');
-      el.innerHTML = `<div><h3>${done ? '✓ ' : ''}${m.t}</h3><p>${m.d}</p><div class="tag">${m.xp} XP • Syarat: ${m.need} XP ${done ? '• Selesai' : ''}</div></div>`;
+      el.innerHTML = `<div><h3>${done ? '✓ ' : ''}${m.t}</h3><p>${m.d}</p><div class="tag">${m.xp} XP • Syarat: ${m.need} XP${done ? '• Selesai' : ''}</div></div>`;
       const b = document.createElement('button');
       b.className = 'm-btn';
       b.textContent = done ? 'Selesai' : locked ? 'Terkunci' : 'Mulai';
@@ -643,25 +1040,26 @@
   }
 
   function startMission(id){
-    const is02 = currentCase === 'kasus02';
-    if(!is02){
-      if(id === 'm1'){ document.getElementById('passTitle').textContent = '01 — Password Rina'; document.getElementById('passDesc').textContent = 'Di log, password Rina tercatat lemah. Uji seberapa lemah, lalu tentukan standar yang benar.'; return openModal('passModal'); }
-      if(id === 'm2') return openQuiz('02 — Email Phishing ke Rina', 'Rina menerima email ini. Baca juga bukti: cat email-rina.txt. Tindakan yang benar?', ['Buka link dan masukkan OTP', 'Abaikan, laporkan, dan blokir. Verifikasi lewat aplikasi resmi.', 'Kirim password saja, OTP jangan'], '', 1, 'm2', 'Link tidak resmi + meminta OTP adalah pola phishing.');
-      if(id === 'm3'){ log('> Modul 03: ketik scan.'); return cmdInput.focus(); }
-      if(id === 'm4') return openQuiz('04 — Chat Social Engineering', 'Baca bukti: cat chat-rina.txt. Seseorang mengaku dari IT meminta password dan OTP Rina. Respons yang benar?', ['Berikan', 'Tolak. OTP dan password tidak dibagikan ke siapa pun.', 'Berikan OTP saja'], '', 1, 'm4', 'Tidak ada alasan yang sah untuk meminta OTP orang lain.');
-      if(id === 'm5'){ log('> Modul 05: ketik cat backup.txt atau find flag.'); return cmdInput.focus(); }
-      if(id === 'm6') return openQuiz('06 — SQLi di Login Internal', 'Login internal PT Nusantara Retail (fiktif) rentan karena input digabung langsung ke query. Perbaikan yang benar?', ['Sembunyikan pesan error', 'Gunakan prepared statement / parameterized query dan validasi input', 'Ganti nama tabel'], 'query = "SELECT * FROM users WHERE user = \'" + input + "\'"', 1, 'm6', 'Prepared statement memisahkan data dari perintah SQL.');
-      if(id === 'm7') return openQuiz('07 — XSS di Komentar Internal', 'Komentar internal berisi tag script dan tampil apa adanya. Perbaikan yang benar?', ['Biarkan, hanya alert', 'Escape / sanitasi output dan terapkan Content Security Policy', 'Hapus fitur komentar'], '<scr' + 'ipt>alert("x")<\/scr' + 'ipt> Halo!', 1, 'm7', 'Output dari pengguna harus di-escape sebelum dirender.');
-      if(id === 'm8'){ document.getElementById('bossTitle').textContent = '08 — Perbaiki Sebelum Server Dimatikan'; document.getElementById('bossDesc').textContent = 'HR akan mematikan server dalam 60 detik untuk maintenance. Perbaiki 3 temuan dari terminal: fix sql — prepared statement | fix xss — escape output | fix port — tutup port 8080'; return openModal('bossModal'); }
-    } else {
-      if(id === 'm1') return openQuiz('01 — Voucher Palsu', 'Baca: cat voucher.txt. Voucher ANDAR90 diskon 90% beredar. Sikap yang benar?', ['Langsung pakai, mumpung gratis', 'Cek ke akun resmi / owner. Voucher tidak ada di database resmi = palsu, jangan disebar.', 'Beli lalu jual lagi'], '', 1, 'm1', 'Voucher yang tidak ada di sistem resmi adalah palsu, walau terlihat meyakinkan.');
-      if(id === 'm2') return openQuiz('02 — Akun Palsu', 'Akun penyebar adalah @andarshop_promo, akun resmi @andarshop. Bedanya?', ['Sama saja', 'Akun palsu meniru nama + logo, tapi handle beda dan tidak terverifikasi. Cek handle, bukan foto.', 'Yang followersnya banyak pasti asli'], '', 1, 'm2', 'Penipu meniru tampilan. Cek handle persis, riwayat, dan tautan resmi.');
-      if(id === 'm3') return openQuiz('03 — Login Palsu ke Admin', 'Admin klik andarshop-login.xyz yang meniru login asli. Setelah itu password diganti. Apa yang terjadi?', ['Admin lupa password', 'Credential harvesting: password admin dicuri lewat halaman palsu, lalu dipakai untuk ambil alih.', 'Server error'], '', 1, 'm3', 'Halaman login palsu = pencurian kredensial. Wajib reset + MFA + cek sesi.');
-      if(id === 'm4'){ log('> Modul 04: ketik scan.'); return cmdInput.focus(); }
-      if(id === 'm5') return openQuiz('05 — Pesanan Diubah (IDOR)', 'Baca: cat order-log.txt. Budi (budi_01) bisa buka Order #A103 milik Sari. Ini disebut?', ['Fitur berbagi pesanan', 'IDOR — server tidak cek apakah pesanan itu milik user yang meminta.', 'Bug tampilan'], '', 1, 'm5', 'Server harus cek kepemilikan: order milik siapa, siapa yang boleh buka.');
-      if(id === 'm6') return openQuiz('06 — Harga Diubah di Request', 'Harga 250.000 jadi 25.000 di checkout dan lolos. Di mana yang salah?', ['Di kasir', 'Harga dipercaya dari request user. Harusnya harga diambil dari database di server, dan divalidasi ulang.', 'Di internet user'], '', 1, 'm6', 'Jangan percaya harga dari client. Harga final harus dari server.');
-      if(id === 'm7') return openQuiz('07 — Brute Force Tanpa Limit', '47x login gagal dalam 2 menit tanpa diblokir. Perbaikan yang benar?', ['Biarkan, nanti capek sendiri', 'Rate-limit + lockout sementara + alert + CAPTCHA + MFA', 'Ganti password tiap hari'], '', 1, 'm7', 'Tanpa limit, penyerang bisa coba ribuan password. Limit + MFA adalah pertahanan dasar.');
-      if(id === 'm8'){ document.getElementById('bossTitle').textContent = '08 — Amankan AndarShop dalam 60 Detik'; document.getElementById('bossDesc').textContent = 'Owner akan menutup toko dalam 60 detik. Perbaiki 3 temuan: fix voucher — nonaktifkan ANDAR90 | fix price — validasi harga di server | fix ratelimit — aktifkan limit login'; return openModal('bossModal'); }
+    const c = CASES[currentCase];
+    const m = c.missions.find(item => item.id === id);
+    if(!m) return;
+
+    if(m.type === 'password'){
+      document.getElementById('passTitle').textContent = m.passTitle || m.t;
+      document.getElementById('passDesc').textContent = m.passDesc || m.d;
+      return openModal('passModal');
+    }
+    if(m.type === 'quiz'){
+      return openQuiz(m.t, m.quiz.q, m.quiz.opts, m.quiz.code, m.quiz.correct, m.id, m.quiz.explain);
+    }
+    if(m.type === 'terminal'){
+      log(m.hint || '> Gunakan terminal untuk menyelesaikan modul ini.');
+      return cmdInput.focus();
+    }
+    if(m.type === 'boss'){
+      document.getElementById('bossTitle').textContent = c.boss.title;
+      document.getElementById('bossDesc').textContent = c.boss.desc;
+      return openModal('bossModal');
     }
   }
 
@@ -706,8 +1104,8 @@
           document.getElementById('quizFeedback').style.color = 'var(--green)';
           if(!cur().completed[mid]){
             cur().completed[mid] = true;
-            const xpMap = {kasus01:{m2:200,m4:300,m6:400,m7:400}, kasus02:{m1:200,m2:200,m3:300,m5:600,m6:500,m7:400}};
-            addXP((xpMap[currentCase] || {})[mid] || 100, 'Modul selesai');
+            const missionObj = CASES[currentCase].missions.find(item => item.id === mid);
+            addXP(missionObj ? missionObj.xp : 100, 'Modul selesai');
           }
         } else {
           document.getElementById('quizFeedback').textContent = 'Belum tepat.';
@@ -742,7 +1140,8 @@
     if(passScoreVal >= 80){
       if(!cur().completed['m1']){
         cur().completed['m1'] = true;
-        addXP(CASES[currentCase].missions.find(m => m.id === 'm1').xp, 'Password');
+        const m1 = CASES[currentCase].missions.find(m => m.id === 'm1');
+        addXP(m1 ? m1.xp : 100, 'Password');
         closeModal('passModal');
         log('> Modul 01 selesai.', 'ok');
       }
@@ -751,16 +1150,17 @@
 
   function startBoss(){
     closeModal('bossModal');
-    const need = CASES[currentCase].missions.find(m => m.id === 'm8').need;
+    const bossCfg = CASES[currentCase].boss;
+    const bossMission = CASES[currentCase].missions.find(m => m.id === bossCfg.missionId);
+    const need = bossMission ? bossMission.need : 0;
     if(cur().xp < need){ log('> Terkunci. Butuh ' + need + ' XP.'); return; }
-    bossActive = true; bossTime = 60; bossFixed = {};
-    if(currentCase === 'kasus01'){
-      log('> Mulai. 60 detik. Perintah: fix sql, fix xss, fix port');
-      bossFixed = {sql:false, xss:false, port:false};
-    } else {
-      log('> Mulai. 60 detik. Perintah: fix voucher, fix price, fix ratelimit');
-      bossFixed = {voucher:false, price:false, ratelimit:false};
-    }
+
+    bossActive = true;
+    bossTime = bossCfg.time || 60;
+    bossFixed = {};
+    bossCfg.fixes.forEach(f => { bossFixed[f] = false; });
+
+    log('> Mulai. ' + bossTime + ' detik. Perintah: ' + bossCfg.fixes.map(f => 'fix ' + f).join(', '));
     const bossWrap = document.getElementById('liveBossWrap');
     const bossTimeEl = document.getElementById('liveBossTime');
     bossWrap.style.display = 'inline';
@@ -790,16 +1190,25 @@
       bossActive = false;
       document.getElementById('liveBossWrap').style.display = 'none';
       renderQuickBar();
-      if(!cur().completed['m8']){ cur().completed['m8'] = true; addXP(700, 'Modul 08 selesai'); }
+      const bossCfg = CASES[currentCase].boss;
+      const bossMission = CASES[currentCase].missions.find(m => m.id === bossCfg.missionId);
+      if(bossMission && !cur().completed[bossMission.id]){
+        cur().completed[bossMission.id] = true;
+        addXP(bossMission.xp, 'Modul 08 selesai');
+      }
     }
   }
 
   function openCert(){
-    if(Object.keys(cur().completed).length < 8){ log('> Laporan terkunci. Selesaikan 8/8 modul di kasus ini.'); return; }
-    stopTimer();
     const c = CASES[currentCase];
-    const d = new Date(); const id = 'AL-2026-' + String(Math.floor(1000 + Math.random() * 9000));
-    document.getElementById('certCaseLabel').textContent = (currentCase === 'kasus01' ? 'KASUS 01' : 'KASUS 02') + ' • SIMULASI';
+    if(Object.keys(cur().completed).length < c.missions.length){
+      log('> Laporan terkunci. Selesaikan ' + c.missions.length + '/' + c.missions.length + ' modul di kasus ini.');
+      return;
+    }
+    stopTimer();
+    const d = new Date();
+    const id = 'AL-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+    document.getElementById('certCaseLabel').textContent = c.certLabel;
     document.getElementById('certSub').textContent = c.title + ' (Fiktif)';
     document.getElementById('certDesc').innerHTML = c.certDesc;
     document.getElementById('certName').textContent = currentUser;
@@ -817,7 +1226,7 @@
   function getShareText(){
     const c = CASES[currentCase];
     const t = cur().done ? cur().finalTime : 'belum selesai';
-    return 'ANDARLAB — ' + (currentCase === 'kasus01' ? 'Kasus 01' : 'Kasus 02') + ' Selesai\n' + currentUser + ' — ' + c.title + ' (Fiktif)\n8/8 bukti • ' + c.total + ' XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + location.href;
+    return 'ANDARLAB — ' + c.shortLabel + ' Selesai\n' + currentUser + ' — ' + c.title + ' (Fiktif)\n' + c.missions.length + '/' + c.missions.length + ' bukti • ' + c.total + ' XP • Waktu: ' + t + '\nCoba kalahkan waktu saya:\n' + location.href;
   }
 
   function openShare(){
@@ -849,7 +1258,7 @@
     const ping = document.getElementById('livePing');
     if(ping) ping.textContent = (18 + Math.floor(Math.random() * 25)) + ' ms';
     const tgt = document.getElementById('liveTarget');
-    if(tgt) tgt.textContent = currentCase === 'kasus02' ? '192.168.20.7' : '192.168.10.5';
+    if(tgt) tgt.textContent = CASES[currentCase].targetIp;
   }
   setInterval(updateLiveClock, 1000);
   updateLiveClock();
@@ -859,6 +1268,16 @@
     if(el) el.textContent = liveLogs[Math.floor(Math.random() * liveLogs.length)];
   }, 4000);
 
+  function completeTerminalMission(missionId){
+    if(!missionId) return;
+    const p = cur();
+    const m = CASES[currentCase].missions.find(item => item.id === missionId);
+    if(m && !p.completed[missionId] && p.xp >= m.need){
+      p.completed[missionId] = true;
+      addXP(m.xp, 'Modul ' + missionId.replace('m', '0') + ' selesai');
+    }
+  }
+
   function runCommand(rawInput){
     const raw = (rawInput || '').trim();
     const cmd = raw.toLowerCase();
@@ -867,10 +1286,12 @@
       historyIdx = cmdHistory.length;
     }
     log('$ ' + raw, 'cmd');
-    const c = CASES[currentCase], p = cur();
+    const c = CASES[currentCase];
+
     if(cmd === 'help'){
-      if(currentCase === 'kasus01') log('> help, whoami, ls, scan, cat email-rina.txt, cat chat-rina.txt, cat log.txt, cat backup.txt, find flag, fix sql, fix xss, fix port, certificate, share, clear');
-      else log('> help, whoami, ls, scan, cat voucher.txt, cat chat-admin.txt, cat order-log.txt, cat admin-log.txt, find flag, fix voucher, fix price, fix ratelimit, certificate, share, clear');
+      const fileCmds = Object.keys(c.files).map(f => 'cat ' + f).join(', ');
+      const fixCmds = c.boss.fixes.map(f => 'fix ' + f).join(', ');
+      log('> help, whoami, ls, scan, ' + fileCmds + ', find flag, ' + fixCmds + ', certificate, share, clear');
     }
     else if(cmd === 'whoami') log('> ' + currentUser + ' — pentester — ' + c.title + ' — izin audit (fiktif)');
     else if(cmd === 'ls') log('> ' + Object.keys(c.files).join('  ') + '  flag.txt');
@@ -882,33 +1303,27 @@
       else log('> File tidak ditemukan: ' + f + ' — ketik ls');
     }
     else if(cmd === 'scan'){
-      if(currentCase === 'kasus01'){
-        log('> scan 192.168.10.5 — nusantara-retail.test [SIMULASI]');
-        log('> 22/tcp open ssh — layanan resmi');
-        log('> 80/tcp open http — website internal');
-        log('> 443/tcp open https — website internal');
-        log('> 8080/tcp open — TIDAK ADA di daftar resmi. Harus ditutup.', 'warn');
-        if(!p.completed['m3'] && p.xp >= 300){ p.completed['m3'] = true; addXP(300, 'Modul 03 selesai'); }
-      } else {
-        log('> scan 192.168.20.7 — andarshop.test [SIMULASI]');
-        log('> 22/tcp open ssh — layanan resmi');
-        log('> 80/tcp open http — toko online');
-        log('> 443/tcp open https — toko online');
-        log('> 8443/tcp open admin panel — tanpa rate-limit, bisa brute force.', 'warn');
-        log('> Jejak cocok dengan admin-log.txt: 47x login gagal.');
-        if(!p.completed['m4'] && p.xp >= 700){ p.completed['m4'] = true; addXP(300, 'Modul 04 selesai'); }
-      }
+      c.scan.lines.forEach(line => log(line.text, line.cls || ''));
+      completeTerminalMission(c.scan.missionId);
     }
     else if(cmd === 'find flag' || cmd === 'findflag'){
-      if(currentCase === 'kasus01'){ log('> FLAG{ANDARLAB_WHITE_HAT_2026}', 'ok'); if(!p.completed['m5'] && p.xp >= 900){ p.completed['m5'] = true; addXP(600, 'Modul 05 selesai'); } }
-      else { log('> FLAG{ANDARSHOP_DEFENDED_2026}', 'ok'); log('> Flag kedua: temuan IDOR + harga di order-log.txt sudah dicatat.'); }
+      c.flag.lines.forEach(line => log(line.text, line.cls || ''));
+      completeTerminalMission(c.flag.missionId);
     }
     else if(cmd.startsWith('fix ')){
       if(!bossActive){ log('> Buka Modul 08 dulu.'); return; }
       const k = cmd.slice(4).trim();
       if(k in bossFixed){
-        if(!bossFixed[k]){ bossFixed[k] = true; log('> ' + k.toUpperCase() + ' diperbaiki.', 'ok'); bossCheck(); } else log('> Sudah diperbaiki.');
-      } else log('> Perintah fix tidak dikenal untuk kasus ini.');
+        if(!bossFixed[k]){
+          bossFixed[k] = true;
+          log('> ' + k.toUpperCase() + ' diperbaiki.', 'ok');
+          bossCheck();
+        } else {
+          log('> Sudah diperbaiki.');
+        }
+      } else {
+        log('> Perintah fix tidak dikenal untuk kasus ini.');
+      }
     }
     else if(cmd === 'clear') term.innerHTML = '';
     else if(cmd === ''){}
@@ -918,9 +1333,11 @@
   function autocompleteInput(){
     const val = cmdInput.value;
     const lower = val.toLowerCase();
+    const c = CASES[currentCase];
+
     if(lower.startsWith('cat ')){
       const partial = lower.slice(4).trim();
-      const files = Object.keys(CASES[currentCase].files);
+      const files = Object.keys(c.files);
       const matches = files.filter(f => f.startsWith(partial));
       if(matches.length === 1) cmdInput.value = 'cat ' + matches[0];
       else if(matches.length > 1) log('> ' + matches.join('  '));
@@ -928,14 +1345,14 @@
     }
     if(lower.startsWith('fix ')){
       const partial = lower.slice(4).trim();
-      const targets = currentCase === 'kasus01' ? ['sql', 'xss', 'port'] : ['voucher', 'price', 'ratelimit'];
+      const targets = c.boss.fixes;
       const matches = targets.filter(t => t.startsWith(partial));
       if(matches.length === 1) cmdInput.value = 'fix ' + matches[0];
       else if(matches.length > 1) log('> ' + matches.join('  '));
       return;
     }
     const baseCmds = ['help', 'whoami', 'ls', 'scan', 'cat ', 'find flag', 'fix ', 'certificate', 'share', 'clear'];
-    const matches = baseCmds.filter(c => c.startsWith(lower));
+    const matches = baseCmds.filter(item => item.startsWith(lower));
     if(matches.length === 1) cmdInput.value = matches[0];
     else if(matches.length > 1) log('> ' + matches.map(m => m.trim()).join('  '));
   }
@@ -971,6 +1388,7 @@
   window.showRegister = showRegister;
   window.doRegister = doRegister;
   window.showLogin = showLogin;
+  window.resetProgress = resetProgress;
   window.doLogout = doLogout;
   window.selectCase = selectCase;
   window.openCert = openCert;
