@@ -1,6 +1,6 @@
 # ANDARLAB
 
-Lab simulasi *penetration testing* dan analisis insiden berbasis browser tanpa dependensi eksternal (*single-file HTML*). Dirancang untuk melatih alur investigasi dasar, pembacaan log, identifikasi kerentanan web, serta langkah mitigasi melalui antarmuka terminal interaktif.
+Lab simulasi *penetration testing*, analisis insiden, dan mitigasi kerentanan berbasis browser tanpa dependensi eksternal (*single-file HTML*). Dirancang untuk melatih alur investigasi dasar, pembacaan log, identifikasi celah keamanan web maupun API, serta penerapan patch melalui terminal interaktif.
 
 ## Skenario Kasus
 
@@ -8,17 +8,19 @@ Lab simulasi *penetration testing* dan analisis insiden berbasis browser tanpa d
 | :--- | :--- | :--- | :--- |
 | **Kasus 01 — PT Nusantara Retail** | `nusantara-retail.test` (`192.168.10.5`) | Password Policy, Phishing, Open Port (`8080`), Social Engineering, SQL Injection, XSS | 3000 XP |
 | **Kasus 02 — AndarShop** | `andarshop.test` (`192.168.20.7`) | Account Impersonation, Credential Harvesting, IDOR, Price Manipulation, Brute Force / Rate-Limiting | 3200 XP |
+| **Kasus 03 — AndarPay** | `api.andarpay.test` (`192.168.30.9`) | Exposed Swagger/Debug Env, Weak JWT Secret, JWT `alg:none`, BOLA/IDOR Wallet, SSRF Webhook | 3500 XP |
 
 ## Fitur Utama
 
-* **Terminal Simulasi:** Mendukung perintah investigasi dan remediasi (`help`, `whoami`, `ls`, `cat`, `scan`, `find flag`, `fix`, `certificate`, `share`, `clear`).
-* **Penilaian & Timer Audit:** Pelacakan progres per kasus, akumulasi XP, kenaikan peringkat (`NEWBIE` hingga `MASTER WHITE HAT`), serta pencatatan durasi penyelesaian.
-* **Tantangan Perbaikan (Modul 08):** Simulasi remediasi celah keamanan melalui terminal dalam batas waktu 60 detik.
-* **Laporan Audit & Sertifikat:** Ringkasan temuan teknis dan bukti penyelesaian simulasi yang dapat langsung dicetak atau disimpan sebagai PDF.
+* **Terminal Simulasi:** Mendukung perintah investigasi dan remediasi (`help`, `whoami`, `ls`, `cat`, `scan`, `find flag`, `fix`, `certificate`, `share`, `clear`), riwayat perintah (`↑` / `↓`), *autocomplete* (`Tab`), serta tombol pintasan sentuh (*quick-tap bar*).
+* **Auto-Save Progres per Akun:** Progres XP, modul selesai, dan waktu penyelesaian tersimpan otomatis di `localStorage` per *username* terdaftar (dengan opsi **Reset Progres** dan **Mode Tamu** tanpa penyimpanan).
+* **Arsitektur Data-Driven:** Seluruh skenario, bukti log, soal kuis, dan target remediasi dikelola dalam objek terstruktur `CASES` sehingga penambahan kasus baru tidak memerlukan perubahan pada logika mesin utama.
+* **Laporan Audit & Sertifikat:** Ringkasan temuan teknis dan bukti penyelesaian simulasi yang dapat dicetak atau disimpan sebagai PDF.
 * **Keamanan Client-Side:**
-  * Penyimpanan akun lokal di `localStorage` menggunakan *hashing* SHA-256 (Web Crypto API dengan *fallback* untuk protokol `file://`).
+  * Kebijakan `Content-Security-Policy` dengan `connect-src 'none'`.
+  * Penyimpanan akun lokal menggunakan *hashing* SHA-256 (Web Crypto API dengan *fallback* untuk protokol `file://`).
   * Sanitasi output terminal berbasis `textContent` untuk mencegah DOM XSS.
-  * Isolasi *state* permainan dan skor XP di dalam *IIFE closure*.
+  * Isolasi *state* permainan di dalam *IIFE closure*.
 
 ## Cara Menjalankan
 
@@ -28,11 +30,11 @@ Aplikasi berjalan sepenuhnya di sisi klien (*static HTML/CSS/JS*) tanpa memerluk
    ```bash
    git clone [https://github.com/andarmax/andarlab.git](https://github.com/andarmax/andarlab.git)
    ```
-2. Buka `index.html` langsung di browser (desktop maupun mobile), atau *deploy* sebagai halaman statis di GitHub Pages / Netlify.
+2. Buka `index.html` langsung di browser (desktop maupun mobile), atau *deploy* langsung ke GitHub Pages / Netlify.
 
 ### Akses Masuk
 * **Akun Default Lab:** Username `andarlab` / Password `Andar_TE18`
-* **Akun Lokal:** Gunakan menu **Buat Akun** untuk menyimpan kredensial sendiri secara lokal di perangkat.
+* **Akun Lokal:** Gunakan menu **Buat Akun** untuk menyimpan kredensial dan progres belajar secara otomatis di perangkat.
 * **Mode Tamu:** Isi nama pada kolom username lalu pilih **Main Sebagai Tamu**.
 
 ## Daftar Perintah Terminal
@@ -41,7 +43,7 @@ Aplikasi berjalan sepenuhnya di sisi klien (*static HTML/CSS/JS*) tanpa memerluk
 help              Menampilkan daftar perintah sesuai kasus yang aktif
 whoami            Menampilkan identitas sesi pentester dan target aktif
 ls                Melihat daftar file bukti di direktori kasus
-cat <nama_file>   Membaca isi log, email, atau catatan insiden
+cat <nama_file>   Membaca isi log, email, token, atau catatan insiden
 scan              Memindai port terbuka pada server target simulasi
 find flag         Mengambil flag setelah analisis bukti selesai
 fix <parameter>   Menjalankan patch perbaikan pada Modul 08
